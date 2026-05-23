@@ -53,8 +53,32 @@ export function parserNestLens(): NestProjectStructure | null {
             const innerExpression = expression.expression;
 
             // 6. Confirm that the inner expression is a simple identifier to safely extract its name:
-            if (ts.isIdentifier(innerExpression)) {
-              console.log(innerExpression.text); // Print the decorator's name (e.g., "Module")
+            if (
+              ts.isIdentifier(innerExpression) &&
+              innerExpression.text === "Module"
+            ) {
+              console.log("Decorator Name: " + innerExpression.text); // Print the decorator's name (e.g., "Module")
+              const configObject = expression.arguments[0];
+
+              if (configObject && ts.isObjectLiteralExpression(configObject)) {
+                console.log("Config Object Found");
+                for (const prop of configObject.properties) {
+                  if (
+                    ts.isPropertyAssignment(prop) &&
+                    ts.isIdentifier(prop.name)
+                  ) {
+                    console.log("Property Key: " + prop.name.text + ":");
+
+                    const valueNode = prop.initializer;
+                    if (valueNode && ts.isArrayLiteralExpression(valueNode)) {
+                      for (const elemet of valueNode.elements)
+                        if (ts.isIdentifier(elemet)) {
+                          console.log("elemet: " + elemet.text);
+                        }
+                    }
+                  }
+                }
+              }
             }
           }
         }
