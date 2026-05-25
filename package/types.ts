@@ -30,4 +30,4 @@ interface ServiceNode {
   name: string;
 }
 
-export { NestProjectStructure };
+export { NestProjectStructure, ModuleNode, ControllerNode, RouterNode, ProviderNode, ServiceNode };
