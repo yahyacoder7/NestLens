@@ -1,10 +1,39 @@
 import * as ts from "typescript";
-import { NestProjectStructure } from "./tpes";
+import { NestProjectStructure } from "./types";
 /**
  * the core function that parse the nest js project and extract the information needed
  * @param filepath  the path to the nest js project
  * @param config the configuration object
  */
+
+const structure: NestProjectStructure = {
+  modules: [],
+  controllers: [],
+  providers: [],
+};
+
+function parserModule(node: ts.ClassDeclaration) {
+  const moduleName = node.name?.text || "UnknowModule";
+
+  const extractedImports: string[] = [];
+  const extractedControllers: string[] = [];
+  const extractedProviders: string[] = [];
+
+  const decorators = ts.getDecorators(node);
+  if (!decorators || decorators.length === 0) return;
+
+  const decorator = decorators[0];
+
+  const expression = decorator.expression;
+  if (ts.isCallExpression(expression)) {
+    const configObject = expression.arguments[0];
+    if (configObject && ts.isObjectLiteralExpression(configObject)) {
+      for (const prop of configObject.properties) {
+        
+      }
+    }
+  }
+}
 
 export function parserNestLens(): NestProjectStructure | null {
   const filePath: string[] = [
