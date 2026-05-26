@@ -247,7 +247,6 @@ export function runASTAnalysis(): NestProjectStructure | null {
     if (!(file.isDeclarationFile || filePath.includes("node_modules"))) {
       if (!excludeRegex.test(filePath)) {
         visit(file);
-        console.log("File found: ", file.fileName);
       }
     }
   }
@@ -291,8 +290,6 @@ export function runASTAnalysis(): NestProjectStructure | null {
     ts.forEachChild(node, visit);
   }
 
-  const outputPath = "./output.json";
-  fs.writeFileSync(outputPath, JSON.stringify(structure, null, 2));
   return structure;
 }
  
