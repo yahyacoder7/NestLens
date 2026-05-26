@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestLens Architecture Map</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0b0d17;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0f1228 0%, #1a1f3a 100%);
+            border-bottom: 1px solid #2a2f4a;
+            padding: 24px 40px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .header-title h1 {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4ed9a6, #3ba4d9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header-title span {
+            font-size: 28px;
+        }
+        .header-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .stat {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid #2a2f4a;
+            border-radius: 8px;
+            padding: 8px 16px;
+            text-align: center;
+            min-width: 80px;
+        }
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .stat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+        .stat.modules .stat-value { color: #4fc3f7; }
+        .stat.controllers .stat-value { color: #4ed9a6; }
+        .stat.providers .stat-value { color: #b388ff; }
+        .stat.routes .stat-value { color: #ffb74d; }
+
+        /* Main Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 40px 60px;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #9ca3af;
+        }
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        .legend-dot.module { background: #1e3a6f; border: 2px solid #4fc3f7; }
+        .legend-dot.controller { background: #1a4a3a; border: 2px solid #4ed9a6; }
+        .legend-dot.provider { background: #2d1f4a; border: 2px solid #b388ff; }
+        .legend-dot.route { background: #3d2e0a; border: 2px solid #ffb74d; }
+
+        /* Tree wrapper */
+        .tree-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Root Module */
+        .root-module {
+            position: relative;
+            z-index: 2;
+            margin-bottom: 0;
+        }
+        .root-card {
+            background: linear-gradient(135deg, #1a2a6c 0%, #162050 100%);
+            border: 2px solid #4fc3f7;
+            border-radius: 16px;
+            padding: 24px 40px;
+            text-align: center;
+            min-width: 240px;
+            box-shadow: 0 0 40px rgba(79, 195, 247, 0.15), 0 8px 32px rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .root-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 60px rgba(79, 195, 247, 0.25), 0 12px 40px rgba(0,0,0,0.5);
+        }
+        .root-card .emoji {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .root-card .name {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .root-card .sub {
+            font-size: 13px;
+            color: #8ba4d9;
+            margin-top: 4px;
+        }
+        .root-card .badges {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 12px;
+        }
+        .badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .badge.controller-badge {
+            background: rgba(78, 217, 166, 0.15);
+            color: #4ed9a6;
+            border: 1px solid rgba(78, 217, 166, 0.3);
+        }
+        .badge.provider-badge {
+            background: rgba(179, 136, 255, 0.15);
+            color: #b388ff;
+            border: 1px solid rgba(179, 136, 255, 0.3);
+        }
+        .badge.import-badge {
+            background: rgba(79, 195, 247, 0.15);
+            color: #4fc3f7;
+            border: 1px solid rgba(79, 195, 247, 0.3);
+        }
+
+        /* SVG Connector */
+        .connector-svg {
+            width: 100%;
+            height: 80px;
+            flex-shrink: 0;
+            display: block;
+        }
+
+        /* Modules Grid */
+        .modules-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 0 10px;
+            width: 100%;
+        }
+
+        /* Module Card */
+        .module-card {
+            background: linear-gradient(180deg, #13172e 0%, #0f1225 100%);
+            border: 1px solid #252a4a;
+            border-radius: 12px;
+            width: 220px;
+            min-height: 120px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #4fc3f7, #1e3a6f);
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+        .module-card:hover {
+            border-color: #4fc3f7;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(79, 195, 247, 0.12);
+        }
+        .module-card:hover::before {
+            opacity: 1;
+        }
+        .module-card .card-body {
+            padding: 16px 18px 14px;
+        }
+        .module-card .card-icon {
+            font-size: 20px;
+        }
+        .module-card .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #e8e8e8;
+            margin-top: 4px;
+        }
+        .module-card .card-meta {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .module-card .card-meta .meta-item {
+            font-size: 12px;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .module-card .card-meta .meta-item strong {
+            color: #c0c8e0;
+            font-weight: 600;
+        }
+        .module-card .card-meta .ctrl-count { color: #4ed9a6; }
+        .module-card .card-meta .prov-count { color: #b388ff; }
+
+        .module-card .expand-indicator {
+            position: absolute;
+            bottom: 6px;
+            right: 10px;
+            font-size: 10px;
+            color: #4a4f6a;
+            transition: transform 0.3s;
+        }
+        .module-card.expanded .expand-indicator {
+            transform: rotate(180deg);
+        }
+
+        /* Expanded Details inside module */
+        .module-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.3s ease;
+            opacity: 0;
+            border-top: 1px solid transparent;
+        }
+        .module-card.expanded .module-details {
+            max-height: 800px;
+            opacity: 1;
+            border-top-color: #252a4a;
+        }
+        .module-details .detail-section {
+            padding: 10px 18px 12px;
+        }
+        .module-details .detail-section + .detail-section {
+            border-top: 1px solid #1a1e35;
+        }
+        .module-details .detail-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        .module-details .detail-items {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #c0c8e0;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.03);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .detail-item:hover {
+            background: rgba(255,255,255,0.07);
+        }
+        .detail-item .item-icon {
+            font-size: 14px;
+        }
+        .detail-item .route-method {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .route-method.get { background: rgba(78, 217, 166, 0.15); color: #4ed9a6; }
+        .route-method.post { background: rgba(255, 183, 77, 0.15); color: #ffb74d; }
+        .route-method.put { background: rgba(79, 195, 247, 0.15); color: #4fc3f7; }
+        .route-method.patch { background: rgba(179, 136, 255, 0.15); color: #b388ff; }
+        .route-method.delete { background: rgba(239, 83, 80, 0.15); color: #ef5350; }
+
+        .detail-item .route-path {
+            color: #8ba4d9;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: #13172e;
+            border: 1px solid #2a2f4a;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 580px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            animation: modalIn 0.25s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .modal-header {
+            padding: 20px 24px 16px;
+            border-bottom: 1px solid #252a4a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .modal-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            color: #6b7280;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            line-height: 1;
+        }
+        .modal-close:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.08);
+        }
+        .modal-body {
+            padding: 20px 24px 24px;
+        }
+        .modal-body .modal-section {
+            margin-bottom: 20px;
+        }
+        .modal-body .modal-section:last-child {
+            margin-bottom: 0;
+        }
+        .modal-body .modal-section h3 {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+        .modal-body .modal-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.03);
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+        .modal-body .modal-row .label {
+            color: #9ca3af;
+            min-width: 70px;
+        }
+        .modal-body .modal-row .value {
+            color: #e0e0e0;
+        }
+        .modal-body .modal-row .value.mono {
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            color: #8ba4d9;
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .loading .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #2a2f4a;
+            border-top-color: #4fc3f7;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loading p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* Error */
+        .error {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            color: #ef5350;
+            font-size: 18px;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .error .sub {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 16px 20px;
+            }
+            .header-title h1 {
+                font-size: 20px;
+            }
+            .container {
+                padding: 20px 16px 40px;
+            }
+            .modules-grid {
+                gap: 14px;
+            }
+            .module-card {
+                width: 100%;
+                max-width: 320px;
+            }
+            .root-card {
+                padding: 18px 24px;
+                min-width: auto;
+            }
+            .legend {
+                gap: 12px;
+            }
+            .header-stats .stat {
+                min-width: 60px;
+                padding: 6px 10px;
+            }
+            .stat-value {
+                font-size: 15px;
+            }
+        }
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .module-card {
+                width: calc(33.33% - 16px);
+                min-width: 180px;
+                max-width: 240px;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0d17;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a2f4a;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3a3f5a;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-title">
+            <span>🏗️</span>
+            <h1>NestLens Architecture Map</h1>
+        </div>
+        <div class="header-stats" id="stats">
+            <div class="stat modules"><div class="stat-value">-</div><div class="stat-label">Modules</div></div>
+            <div class="stat controllers"><div class="stat-value">-</div><div class="stat-label">Controllers</div></div>
+            <div class="stat providers"><div class="stat-value">-</div><div class="stat-label">Providers</div></div>
+            <div class="stat routes"><div class="stat-value">-</div><div class="stat-label">Routes</div></div>
+        </div>
+    </header>
+
+    <div class="container" id="app">
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyzing architecture...</p>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Details</h2>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const COLORS = {
+                module: { bg: '#1e3a6f', border: '#4fc3f7' },
+                controller: { bg: '#1a4a3a', border: '#4ed9a6' },
+                provider: { bg: '#2d1f4a', border: '#b388ff' }
+            };
+
+            let allData = null;
+
+            // ─── DOM refs ───────────────────────────────────────────
+            const appEl = document.getElementById('app');
+            const loadingEl = document.getElementById('loading');
+            const modal = document.getElementById('modal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            const modalClose = document.getElementById('modalClose');
+
+            modalClose.addEventListener('click', () => modal.classList.remove('active'));
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.classList.remove('active');
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') modal.classList.remove('active');
+            });
+
+            // ─── Fetch & Render ────────────────────────────────────
+            fetch('/api/data')
+                .then(r => r.json())
+                .then(data => {
+                    allData = data;
+                    renderAll(data);
+                })
+                .catch(err => {
+                    appEl.innerHTML = `
+                        <div class="error">
+                            ❌ Failed to load data
+                            <div class="sub">${err.message}</div>
+                        </div>
+                    `;
+                });
+
+            // ─── Helpers ───────────────────────────────────────────
+            function countRoutes(data) {
+                let count = 0;
+                (data.controllers || []).forEach(c => {
+                    count += (c.routers || []).length;
+                });
+                return count;
+            }
+
+            // ─── Render ────────────────────────────────────────────
+            function renderAll(data) {
+                const modules = data.modules || [];
+                const controllers = data.controllers || [];
+                const providers = data.providers || [];
+
+                // Update stats
+                document.querySelector('.stat.modules .stat-value').textContent = modules.length;
+                document.querySelector('.stat.controllers .stat-value').textContent = controllers.length;
+                document.querySelector('.stat.providers .stat-value').textContent = providers.length;
+                document.querySelector('.stat.routes .stat-value').textContent = countRoutes(data);
+
+                // Build lookups
+                const ctrlMap = {};
+                controllers.forEach(c => { ctrlMap[c.name] = c; });
+                const provMap = {};
+                providers.forEach(p => { provMap[p.name] = p; });
+                const modMap = {};
+                modules.forEach(m => { modMap[m.name] = m; });
+
+                // Find root
+                const appModule = modules.find(m => m.name === 'AppModule') || modules[0];
+
+                // Build HTML
+                let html = '';
+
+                // Legend
+                html += `
+                    <div class="legend">
+                        <div class="legend-item"><div class="legend-dot module"></div> Module</div>
+                        <div class="legend-item"><div class="legend-dot controller"></div> Controller</div>
+                        <div class="legend-item"><div class="legend-dot provider"></div> Provider / Service</div>
+                        <div class="legend-item"><div class="legend-dot route"></div> Route</div>
+                    </div>
+                `;
+
+                html += '<div class="tree-wrapper">';
+
+                // Root module
+                const rootCtrlCount = appModule.controllers ? appModule.controllers.length : 0;
+                const rootProvCount = appModule.providers ? appModule.providers.length : 0;
+                const rootImportCount = appModule.imports ? appModule.imports.length : 0;
+
+                html += `
+                    <div class="root-module">
+                        <div class="root-card" data-module="${appModule.name}">
+                            <span class="emoji">🏗️</span>
+                            <div class="name">${appModule.name}</div>
+                            <div class="sub">Root Module &bull; ${rootImportCount} dependencies</div>
+                            <div class="badges">
+                                <span class="badge import-badge">📦 ${rootImportCount} imports</span>
+                                <span class="badge controller-badge">🎛️ ${rootCtrlCount} controller${rootCtrlCount !== 1 ? 's' : ''}</span>
+                                <span class="badge provider-badge">⚙️ ${rootProvCount} provider${rootProvCount !== 1 ? 's' : ''}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // SVG connector lines
+                const childModules = modules.filter(m => m.name !== appModule.name);
+                const childCount = childModules.length;
+                if (childCount > 0) {
+                    const svgWidth = Math.max(300, childCount * 180);
+                    html += `
+                        <svg class="connector-svg" viewBox="0 0 ${svgWidth} 80" preserveAspectRatio="xMidYMid meet">
+                            <!-- Vertical line from root center -->
+                            <line x1="${svgWidth / 2}" y1="0" x2="${svgWidth / 2}" y2="30"
+                                  stroke="#2a2f4a" stroke-width="2" stroke-dasharray="4,3"/>
+                            <!-- Horizontal spine -->
+                            <line x1="60" y1="30" x2="${svgWidth - 60}" y2="30"
+                                  stroke="#2a2f4a" stroke-width="2" stroke-dasharray="4,3"/>
+                            ${childModules.map((_, i) => {
+                                const x = 60 + (i / (childCount - 1 || 1)) * (svgWidth - 120);
+                                return `<line x1="${x}" y1="30" x2="${x}" y2="78" stroke="#2a2f4a" stroke-width="2" stroke-dasharray="4,3"/>`;
+                            }).join('')}
+                        </svg>
+                    `;
+                }
+
+                // Module cards
+                html += '<div class="modules-grid">';
+                childModules.forEach(mod => {
+                    const cCount = mod.controllers ? mod.controllers.length : 0;
+                    const pCount = mod.providers ? mod.providers.length : 0;
+                    html += `
+                        <div class="module-card" data-module="${mod.name}">
+                            <div class="card-body">
+                                <div class="card-icon">📦</div>
+                                <div class="card-title">${mod.name}</div>
+                                <div class="card-meta">
+                                    <span class="meta-item ctrl-count">🎛️ <strong>${cCount}</strong></span>
+                                    <span class="meta-item prov-count">⚙️ <strong>${pCount}</strong></span>
+                                </div>
+                            </div>
+                            <div class="module-details">
+                                ${buildModuleDetails(mod, ctrlMap, provMap)}
+                            </div>
+                            <div class="expand-indicator">▼</div>
+                        </div>
+                    `;
+                });
+                html += '</div>'; // modules-grid
+                html += '</div>'; // tree-wrapper
+
+                appEl.innerHTML = html;
+
+                // ─── Event binding ─────────────────────────────────
+                // Click on root card -> show module detail modal
+                document.querySelector('.root-card').addEventListener('click', function() {
+                    const modName = this.dataset.module;
+                    showModuleModal(modName, modMap, ctrlMap, provMap);
+                });
+
+                // Click on module card header -> toggle expand
+                document.querySelectorAll('.module-card').forEach(card => {
+                    const body = card.querySelector('.card-body');
+                    body.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        card.classList.toggle('expanded');
+                    });
+
+                    // Click on detail items (controller/provider) -> show detail modal
+                    card.querySelectorAll('.detail-item').forEach(item => {
+                        item.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const type = this.dataset.type;
+                            const name = this.dataset.name;
+                            if (type === 'controller') {
+                                showControllerModal(name, ctrlMap);
+                            } else if (type === 'provider') {
+                                showProviderModal(name, provMap);
+                            }
+                        });
+                    });
+                });
+            }
+
+            // ─── Build module details HTML ─────────────────────────
+            function buildModuleDetails(mod, ctrlMap, provMap) {
+                let html = '';
+
+                // Controllers
+                if (mod.controllers && mod.controllers.length > 0) {
+                    html += `<div class="detail-section">
+                        <div class="detail-label">🎛️ Controllers</div>
+                        <div class="detail-items">`;
+                    mod.controllers.forEach(name => {
+                        const ctrl = ctrlMap[name];
+                        const routeCount = ctrl ? (ctrl.routers ? ctrl.routers.length : 0) : 0;
+                        html += `<div class="detail-item" data-type="controller" data-name="${name}">
+                            <span class="item-icon">🎛️</span> ${name}
+                            <span style="margin-left:auto;font-size:11px;color:#6b7280;">${routeCount} route${routeCount !== 1 ? 's' : ''}</span>
+                        </div>`;
+                    });
+                    html += `</div></div>`;
+                }
+
+                // Providers
+                if (mod.providers && mod.providers.length > 0) {
+                    html += `<div class="detail-section">
+                        <div class="detail-label">⚙️ Providers</div>
+                        <div class="detail-items">`;
+                    mod.providers.forEach(name => {
+                        const prov = provMap[name];
+                        const svcCount = prov ? (prov.services ? prov.services.length : 0) : 0;
+                        html += `<div class="detail-item" data-type="provider" data-name="${name}">
+                            <span class="item-icon">⚙️</span> ${name}
+                            <span style="margin-left:auto;font-size:11px;color:#6b7280;">${svcCount} method${svcCount !== 1 ? 's' : ''}</span>
+                        </div>`;
+                    });
+                    html += `</div></div>`;
+                }
+
+                // Imports
+                if (mod.imports && mod.imports.length > 0) {
+                    html += `<div class="detail-section">
+                        <div class="detail-label">📦 Imports</div>
+                        <div class="detail-items">`;
+                    mod.imports.forEach(name => {
+                        html += `<div class="detail-item" style="cursor:default;">
+                            <span class="item-icon">📦</span> ${name}
+                        </div>`;
+                    });
+                    html += `</div></div>`;
+                }
+
+                if (!html) {
+                    html = `<div class="detail-section" style="padding:14px 18px;color:#6b7280;font-size:13px;">
+                        No controllers or providers
+                    </div>`;
+                }
+
+                return html;
+            }
+
+            // ─── Modal: Module ─────────────────────────────────────
+            function showModuleModal(modName, modMap, ctrlMap, provMap) {
+                const mod = modMap[modName];
+                if (!mod) return;
+
+                modalTitle.innerHTML = `📦 ${modName}`;
+
+                let body = '';
+
+                // Controllers
+                if (mod.controllers && mod.controllers.length > 0) {
+                    body += `<div class="modal-section">
+                        <h3>🎛️ Controllers (${mod.controllers.length})</h3>`;
+                    mod.controllers.forEach(name => {
+                        const ctrl = ctrlMap[name];
+                        const routes = ctrl ? (ctrl.routers || []) : [];
+                        body += `<div class="modal-row" style="flex-direction:column;align-items:stretch;gap:4px;">
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span style="color:#4ed9a6;">🎛️</span>
+                                <strong>${name}</strong>
+                                ${ctrl && ctrl.prefix ? `<span style="color:#6b7280;font-size:12px;">/ ${ctrl.prefix}</span>` : ''}
+                            </div>
+                            ${routes.length > 0 ? `
+                            <div style="padding-left:28px;display:flex;flex-direction:column;gap:3px;">
+                                ${routes.map(r => `
+                                    <div style="display:flex;align-items:center;gap:8px;font-size:12px;">
+                                        <span class="route-method ${r.method.toLowerCase()}">${r.method}</span>
+                                        <span class="route-path">/${ctrl ? ctrl.prefix : ''}${r.path ? '/' + r.path : ''}</span>
+                                        <span style="color:#6b7280;margin-left:auto;">${r.name}</span>
+                                    </div>
+                                `).join('')}
+                            </div>` : ''}
+                        </div>`;
+                    });
+                    body += `</div>`;
+                }
+
+                // Providers
+                if (mod.providers && mod.providers.length > 0) {
+                    body += `<div class="modal-section">
+                        <h3>⚙️ Providers (${mod.providers.length})</h3>`;
+                    mod.providers.forEach(name => {
+                        const prov = provMap[name];
+                        const svcs = prov ? (prov.services || []) : [];
+                        body += `<div class="modal-row" style="flex-direction:column;align-items:stretch;gap:4px;">
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span style="color:#b388ff;">⚙️</span>
+                                <strong>${name}</strong>
+                                <span style="color:#6b7280;font-size:12px;margin-left:auto;">${svcs.length} method${svcs.length !== 1 ? 's' : ''}</span>
+                            </div>
+                            ${svcs.length > 0 ? `
+                            <div style="padding-left:28px;display:flex;flex-wrap:wrap;gap:3px;">
+                                ${svcs.map(s => `
+                                    <span style="font-size:11px;background:rgba(179,136,255,0.1);color:#b388ff;padding:2px 8px;border-radius:10px;">${s.name}</span>
+                                `).join('')}
+                            </div>` : ''}
+                        </div>`;
+                    });
+                    body += `</div>`;
+                }
+
+                // Imports
+                if (mod.imports && mod.imports.length > 0) {
+                    body += `<div class="modal-section">
+                        <h3>📦 Imports (${mod.imports.length})</h3>
+                        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                            ${mod.imports.map(name => `
+                                <span style="font-size:12px;background:rgba(79,195,247,0.1);color:#4fc3f7;padding:4px 10px;border-radius:6px;border:1px solid rgba(79,195,247,0.15);">${name}</span>
+                            `).join('')}
+                        </div>
+                    </div>`;
+                }
+
+                // Exports
+                if (mod.exports && mod.exports.length > 0) {
+                    body += `<div class="modal-section">
+                        <h3>📤 Exports (${mod.exports.length})</h3>
+                        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                            ${mod.exports.map(name => `
+                                <span style="font-size:12px;background:rgba(255,183,77,0.1);color:#ffb74d;padding:4px 10px;border-radius:6px;border:1px solid rgba(255,183,77,0.15);">${name}</span>
+                            `).join('')}
+                        </div>
+                    </div>`;
+                }
+
+                if (!body) {
+                    body = `<div style="color:#6b7280;text-align:center;padding:20px;">No details available</div>`;
+                }
+
+                modalBody.innerHTML = body;
+                modal.classList.add('active');
+            }
+
+            // ─── Modal: Controller ─────────────────────────────────
+            function showControllerModal(name, ctrlMap) {
+                const ctrl = ctrlMap[name];
+                if (!ctrl) return;
+
+                modalTitle.innerHTML = `🎛️ ${name}`;
+
+                let body = '';
+                body += `<div class="modal-section">
+                    <h3>Endpoint Prefix</h3>
+                    <div class="modal-row">
+                        <span class="label">Prefix</span>
+                        <span class="value mono">/${ctrl.prefix}</span>
+                    </div>
+                </div>`;
+
+                if (ctrl.dependencies && ctrl.dependencies.length > 0) {
+                    body += `<div class="modal-section">
+                        <h3>Dependencies</h3>
+                        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                            ${ctrl.dependencies.map(d => `
+                                <span style="font-size:12px;background:rgba(179,136,255,0.1);color:#b388ff;padding:4px 10px;border-radius:6px;border:1px solid rgba(179,136,255,0.15);">${d}</span>
+                            `).join('')}
+                        </div>
+                    </div>`;
+                }
+
+                if (ctrl.routers && ctrl.routers.length > 0) {
+                    body += `<div class="modal-section">
+                        <h3>Routes (${ctrl.routers.length})</h3>`;
+                    ctrl.routers.forEach(r => {
+                        body += `<div class="modal-row">
+                            <span class="route-method ${r.method.toLowerCase()}">${r.method}</span>
+                            <span class="value mono">/${ctrl.prefix}${r.path ? '/' + r.path : ''}</span>
+                            <span style="color:#6b7280;margin-left:auto;font-size:12px;">${r.name}</span>
+                        </div>`;
+                    });
+                    body += `</div>`;
+                }
+
+                modalBody.innerHTML = body;
+                modal.classList.add('active');
+            }
+
+            // ─── Modal: Provider ───────────────────────────────────
+            function showProviderModal(name, provMap) {
+                const prov = provMap[name];
+                if (!prov) return;
+
+                modalTitle.innerHTML = `⚙️ ${name}`;
+
+                let body = '';
+
+                if (prov.dependencies && prov.dependencies.length > 0) {
+                    body += `<div class="modal-section">
+                        <h3>Dependencies (${prov.dependencies.length})</h3>
+                        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                            ${prov.dependencies.map(d => `
+                                <span style="font-size:12px;background:rgba(179,136,255,0.1);color:#b388ff;padding:4px 10px;border-radius:6px;border:1px solid rgba(179,136,255,0.15);">${d}</span>
+                            `).join('')}
+                        </div>
+                    </div>`;
+                }
+
+                if (prov.services && prov.services.length > 0) {
+                    body += `<div class="modal-section">
+                        <h3>Methods (${prov.services.length})</h3>
+                        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                            ${prov.services.map(s => `
+                                <span style="font-size:12px;background:rgba(78,217,166,0.1);color:#4ed9a6;padding:4px 12px;border-radius:6px;border:1px solid rgba(78,217,166,0.15);">${s.name}</span>
+                            `).join('')}
+                        </div>
+                    </div>`;
+                }
+
+                if (!body) {
+                    body = `<div style="color:#6b7280;text-align:center;padding:20px;">No details available</div>`;
+                }
+
+                modalBody.innerHTML = body;
+                modal.classList.add('active');
+            }
+
+        })();
+    </script>
+
+</body>
+</html>

@@ -8,7 +8,7 @@ import {
   RouterNode,
   ProviderNode,
   ServiceNode,
-} from "./types";
+} from "./types.js";
 /**
  * the core function that parse the nest js project and extract the information needed
  * @param filepath  the path to the nest js project
@@ -225,7 +225,7 @@ function parserProvider(node: ts.ClassDeclaration) {
   structure.providers.push(newProviderNode);
 }
 
-export function parserNestLens(): NestProjectStructure | null {
+export function runASTAnalysis(): NestProjectStructure | null {
   const filePath: string[] = [
     "C:\\Users\\Yahya Meksen\\Documents\\github-project\\ToDo-Manager-Project\\src\\app.module.ts",
   ];
@@ -295,3 +295,5 @@ export function parserNestLens(): NestProjectStructure | null {
   fs.writeFileSync(outputPath, JSON.stringify(structure, null, 2));
   return structure;
 }
+ 
+
