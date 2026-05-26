@@ -27,25 +27,25 @@ function parserModule(node: ts.ClassDeclaration) {
   const extractedImports: string[] = [];
   const extractedControllers: string[] = [];
   const extractedProviders: string[] = [];
+  const extractedExports: string[] = [];
 
   const decorators = ts.getDecorators(node);
   if (!decorators || decorators.length === 0) return;
 
-   const allowedDecorators = ["Module", "Controller", "Injectable"];
+  const allowedDecorators = ["Module", "Controller", "Injectable"];
 
-        const decorator = decorators.find((dec) => {
+  const decorator = decorators.find((dec) => {
+    if (
+      ts.isCallExpression(dec.expression) &&
+      ts.isIdentifier(dec.expression.expression)
+    ) {
+      const name = dec.expression.expression;
+      return allowedDecorators.includes(name.text);
+    }
+    return false;
+  });
 
-          if (
-            ts.isCallExpression(dec.expression) &&
-            ts.isIdentifier(dec.expression.expression)
-          ) {
-            const name = dec.expression.expression;
-            return allowedDecorators.includes(name.text);
-          }
-          return false;
-        });
-
-        const decoratorExpression = decorator?.expression as ts.CallExpression;
+  const decoratorExpression = decorator?.expression as ts.CallExpression;
 
   if (ts.isCallExpression(decoratorExpression)) {
     const configObject = decoratorExpression.arguments[0];
@@ -73,8 +73,10 @@ function parserModule(node: ts.ClassDeclaration) {
               } else if (propertyName === "controllers") {
                 extractedControllers.push(className);
               } else if (propertyName === "providers") {
-                  extractedProviders.push(className);
-                }
+                extractedProviders.push(className);
+              } else if (propertyName === "exports") {
+                extractedExports.push(className);
+              }
             }
           }
         }
@@ -86,10 +88,141 @@ function parserModule(node: ts.ClassDeclaration) {
     controllers: extractedControllers,
     providers: extractedProviders,
     imports: extractedImports,
-    exports: [],
+    exports: extractedExports,
   };
 
   structure.modules.push(newModuleNode);
+}
+
+function parserController(node: ts.ClassDeclaration) {
+  const controllerName = node.name?.text || "UnknownController";
+  let baseRoute = "/";
+
+  const decorators = ts.getDecorators(node);
+  if (!decorators || decorators.length === 0) return;
+
+  const controllerDecorator = decorators.find((dec) => {
+    if (
+      ts.isCallExpression(dec.expression) &&
+      ts.isIdentifier(dec.expression.expression)
+    ) {
+      return dec.expression.expression.text === "Controller";
+    }
+    return false;
+  });
+
+  if (
+    controllerDecorator &&
+    ts.isCallExpression(controllerDecorator.expression)
+  ) {
+    const firsArg = controllerDecorator.expression.arguments[0];
+
+    if (firsArg && ts.isStringLiteral(firsArg)) {
+      baseRoute = firsArg.text;
+    } else if (firsArg && ts.isObjectLiteralExpression(firsArg)) {
+      for (const prop of firsArg.properties) {
+        if (
+          ts.isPropertyAssignment(prop) &&
+          ts.isIdentifier(prop.name) &&
+          prop.name.text === "path"
+        ) {
+          if (ts.isStringLiteral(prop.initializer)) {
+            baseRoute = prop.initializer.text;
+          }
+        }
+      }
+    }
+  }
+
+  const extractedRouters: RouterNode[] = [];
+  const extractedDependencies: string[] = [];
+  const allowedHttpMethods = ["Get", "Post", "Delete", "Put", "Patch", "All"];
+
+  for (const member of node.members) {
+    if (ts.isMethodDeclaration(member) && ts.isIdentifier(member.name)) {
+      const methodName = member.name.text;
+      const methodDecorators = ts.getDecorators(member);
+
+      if (!methodDecorators || methodDecorators.length === 0) continue;
+
+      for (const decorator of methodDecorators) {
+        if (
+          ts.isCallExpression(decorator.expression) &&
+          ts.isIdentifier(decorator.expression.expression)
+        ) {
+          const decoratorName = decorator.expression.expression.text;
+          if (allowedHttpMethods.includes(decoratorName)) {
+            let subPath = "";
+
+            const routeArg = decorator.expression.arguments[0];
+            if (routeArg && ts.isStringLiteral(routeArg)) {
+              subPath = routeArg.text;
+            }
+            const routerNode: RouterNode = {
+              name: methodName,
+              path: subPath,
+              method: decoratorName.toUpperCase(),
+            };
+            extractedRouters.push(routerNode);
+          }
+        }
+      }
+    }
+    if (ts.isConstructorDeclaration(member)) {
+      for (const param of member.parameters) {
+        if (
+          param.type &&
+          ts.isTypeReferenceNode(param.type) &&
+          ts.isIdentifier(param.type.typeName)
+        ) {
+          const serviceName = param.type.typeName.text;
+          extractedDependencies.push(serviceName);
+        }
+      }
+    }
+  }
+  const newControllerNode: ControllerNode = {
+    name: controllerName,
+    prefix: baseRoute,
+    routers: extractedRouters,
+    dependencies: extractedDependencies,
+  };
+  structure.controllers.push(newControllerNode);
+}
+
+function parserProvider(node: ts.ClassDeclaration) {
+  const serviceName = node.name?.text || "UnknownProvider";
+  const extractedDependencies: string[] = [];
+  const extrectedServices: ServiceNode[] = [];
+
+  for (const member of node.members) {
+    if (ts.isConstructorDeclaration(member)) {
+      for (const param of member.parameters) {
+        if (
+          param.type &&
+          ts.isTypeReferenceNode(param.type) &&
+          ts.isIdentifier(param.type.typeName)
+        ) {
+          const dependencyName = param.type.typeName.text;
+          extractedDependencies.push(dependencyName);
+        }
+      }
+    }
+    if (ts.isMethodDeclaration(member) && ts.isIdentifier(member.name)) {
+      const serviceNode: ServiceNode = {
+        name: member.name.text,
+      };
+      extrectedServices.push(serviceNode);
+    }
+  }
+
+  const newProviderNode: ProviderNode = {
+    name: serviceName,
+    dependencies: extractedDependencies,
+    services: extrectedServices,
+  };
+
+  structure.providers.push(newProviderNode);
 }
 
 export function parserNestLens(): NestProjectStructure | null {
@@ -104,7 +237,7 @@ export function parserNestLens(): NestProjectStructure | null {
   const program = ts.createProgram(filePath, config);
 
   const allFiles = program.getSourceFiles();
-  const nestFileRegex = /\.(module)\.ts$/;
+  const excludeRegex = /\.(spec|test)\.ts$/;
 
   console.log("Start dynamic scanning of all files repeatedly");
 
@@ -112,7 +245,7 @@ export function parserNestLens(): NestProjectStructure | null {
     const filePath = file.fileName;
 
     if (!(file.isDeclarationFile || filePath.includes("node_modules"))) {
-      if (nestFileRegex.test(filePath)) {
+      if (!excludeRegex.test(filePath)) {
         visit(file);
         console.log("File found: ", file.fileName);
       }
@@ -129,7 +262,6 @@ export function parserNestLens(): NestProjectStructure | null {
         const allowedDecorators = ["Module", "Controller", "Injectable"];
 
         const decorator = decorators.find((dec) => {
-
           if (
             ts.isCallExpression(dec.expression) &&
             ts.isIdentifier(dec.expression.expression)
@@ -140,25 +272,26 @@ export function parserNestLens(): NestProjectStructure | null {
           return false;
         });
 
-        const decExpr = (decorator?.expression as ts.CallExpression)?.expression;
-        const decoratorName = decExpr && ts.isIdentifier(decExpr) ? decExpr.text : undefined;
+        const decExpr = (decorator?.expression as ts.CallExpression)
+          ?.expression;
+        const decoratorName =
+          decExpr && ts.isIdentifier(decExpr) ? decExpr.text : undefined;
 
-          if (decoratorName === "Module") {
-            parserModule(node);
-          } else if (decoratorName === "Controller") {
-            // parserController(node);
-          } else if (decoratorName === "Service") {
-            // parserService(node);
-          } else {
-            console.log(`Unknown decorator: ${decoratorName}`);
-          }
+        if (decoratorName === "Module") {
+          parserModule(node);
+        } else if (decoratorName === "Controller") {
+          parserController(node);
+        } else if (decoratorName === "Injectable") {
+          parserProvider(node);
+        } else {
+          console.log(`Unknown decorator: ${decoratorName}`);
         }
       }
-      ts.forEachChild(node, visit);
     }
-
-    const outputPath = './output.json';
-    fs.writeFileSync(outputPath, JSON.stringify(structure, null, 2));
-    return structure;
+    ts.forEachChild(node, visit);
   }
 
+  const outputPath = "./output.json";
+  fs.writeFileSync(outputPath, JSON.stringify(structure, null, 2));
+  return structure;
+}
