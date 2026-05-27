@@ -1,7 +1,7 @@
 {
   "name": "nestlens",
   "version": "1.0.0",
-  "description": "",
+  "description": "Static architecture visualisation tool for NestJS projects — automatically parses NestJS source code using the TypeScript Compiler API and renders an interactive architecture dashboard.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
