@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./nestlens-logo.png" alt="NestLens Logo" width="220" />
+  <img src="https://github.com/user-attachments/assets/c16093f3-ea91-47aa-9d6f-58d4edae6dc3" alt="NestLens Logo" width="80" />
 </p>
 
 <p align="center">
@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/badge/license-MIT-%2333CC33?style=for-the-badge&labelColor=1a1a2e" alt="License" />
 </p>
 
-<h1 align="center">NestLens</h1>
+<h1 align="center">Nest Lens</h1>
 <p align="center"><em>See your NestJS architecture, clearly.</em></p>
 
 ---
