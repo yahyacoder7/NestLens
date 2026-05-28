@@ -170,14 +170,6 @@ NestLens is open-source and welcomes contributions from developers at any level.
 
 **Improving documentation** — corrections, clarifications, and translations are all welcome.
 
-### Roadmap
-
-- CLI arguments for custom file paths (no hardcoded paths)
-- Support for `@Guard`, `@Interceptor`, `@Pipe`, `@Filter` decorators
-- GitHub Action for automatic architecture diffs on pull requests
-- Monorepo support for multiple NestJS applications
-
----
 
 ## License
 
