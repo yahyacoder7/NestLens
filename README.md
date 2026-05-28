@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/NestLens-v1.0.0-6A0DAD?style=for-the-badge&labelColor=1a1a2e" alt="Version" />
+  <img src="https://img.shields.io/badge/nestlens--viewer-v1.0.0-6A0DAD?style=for-the-badge&labelColor=1a1a2e" alt="Version" />
   <img src="https://img.shields.io/badge/NestJS-%23E0234E?style=for-the-badge&logo=nestjs&logoColor=white&labelColor=1a1a2e" alt="NestJS" />
   <img src="https://img.shields.io/badge/TypeScript-6.0-%233178C6?style=for-the-badge&logo=typescript&logoColor=white&labelColor=1a1a2e" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Express-5.x-%23000000?style=for-the-badge&logo=express&logoColor=white&labelColor=1a1a2e" alt="Express" />
@@ -62,13 +62,19 @@ nestlens/
 ├── tsconfig.json
 ├── .gitignore
 │
-└── package/
-    ├── server.ts        — Express server, runs analysis, serves dashboard on port 4000
-    ├── parser.ts        — Core analysis engine using the TypeScript Compiler API
-    ├── types.ts         — TypeScript interfaces for the data model
-    │
-    └── client/
-        └── index.html   — Interactive dashboard (HTML + CSS + JS, fully self-contained)
+├── package/
+│   ├── server.ts        — Express server, runs analysis, serves dashboard on port 4000
+│   ├── parser.ts        — Core analysis engine using the TypeScript Compiler API
+│   └── types.ts         — TypeScript interfaces for the data model
+│
+└── dist/
+    └── package/
+        ├── server.js
+        ├── parser.js
+        ├── types.js
+        └── client/
+            ├── index.html   — Interactive dashboard (HTML + CSS + JS, fully self-contained)
+            └── logo.png
 ```
 
 ---
@@ -108,7 +114,7 @@ The dashboard is a single-page application that runs entirely in your browser.
 ### Step 1 — Install NestLens
 
 ```bash
-npm install nestlens
+npm install nestlens-viewer
 ```
 
 ### Step 2 — Run It
@@ -116,7 +122,7 @@ npm install nestlens
 Navigate to your NestJS project root and run:
 
 ```bash
-npx nestlens
+npx nest-viewer
 ```
 
 NestLens will scan your `src/app.module.ts` and all files it imports, then open the dashboard automatically at `http://localhost:4000`.
@@ -148,7 +154,7 @@ NestLens will scan your `src/app.module.ts` and all files it imports, then open 
 
 ## Built With AI
 
-The interactive dashboard (`package/client/index.html`) was designed and implemented with assistance from [OpenCode AI](https://opencode.ai), which helped generate the HTML, CSS, and JavaScript for the visualization layer.
+The interactive dashboard (`dist/package/client/index.html`) was designed and implemented with assistance from [OpenCode AI](https://opencode.ai), which helped generate the HTML, CSS, and JavaScript for the visualization layer.
 
 ---
 
