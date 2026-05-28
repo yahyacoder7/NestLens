@@ -11,46 +11,56 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Inter', system-ui, sans-serif; background: #ffffff; color: #171717; overflow: hidden; height: 100vh; width: 100vw; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #0a0a0f; color: #e2e8f0; overflow: hidden; height: 100vh; width: 100vw; }
+
+  :root {
+    --brand: #DC2626;
+    --brand-light: #EF4444;
+    --brand-dark: #B91C1C;
+    --brand-glow: rgba(220,38,38,0.4);
+  }
 
   .grid-bg {
+    background-color: #0a0a0f;
     background-image:
-      linear-gradient(rgba(148,163,184,0.3) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(148,163,184,0.3) 1px, transparent 1px);
+      linear-gradient(rgba(220,38,38,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(220,38,38,0.06) 1px, transparent 1px);
     background-size: 48px 48px;
   }
 
   /* Radial card */
   .r-card {
-    background: #ffffff;
-    border: 1.5px solid #cbd5e1;
-    border-radius: 12px;
-    padding: 10px 14px;
+    background: linear-gradient(135deg, #1a1a2e, #16161d);
+    border: 1.5px solid #334155;
+    border-radius: 14px;
+    padding: 12px 16px;
     cursor: pointer;
-    transition: all 0.15s ease;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 2px 8px rgba(0,0,0,0.04);
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 40px rgba(220,38,38,0.03);
     text-align: center;
     position: absolute;
     transform: translate(-50%, -50%);
     z-index: 2;
-    min-width: 100px;
+    min-width: 110px;
     user-select: none;
+    backdrop-filter: blur(10px);
   }
   .r-card:hover {
-    border-color: #6366f1;
-    box-shadow: 0 6px 20px rgba(99,102,241,0.15), 0 2px 6px rgba(99,102,241,0.08);
+    border-color: var(--brand);
+    box-shadow: 0 8px 32px rgba(220,38,38,0.25), 0 0 60px rgba(220,38,38,0.1);
+    transform: translate(-50%, -50%) scale(1.03);
     z-index: 5;
   }
   .r-card.center {
-    border-color: #4f46e5;
+    border-color: var(--brand);
     border-width: 2px;
-    background: linear-gradient(135deg, #eef2ff, #ffffff);
-    min-width: 130px;
-    padding: 14px 20px;
+    background: linear-gradient(135deg, #1c1017, #2a1215);
+    min-width: 140px;
+    padding: 16px 24px;
     z-index: 3;
-    box-shadow: 0 4px 16px rgba(79,70,229,0.12), 0 8px 32px rgba(79,70,229,0.08);
+    box-shadow: 0 8px 40px rgba(220,38,38,0.35), 0 0 80px rgba(220,38,38,0.15);
   }
-  .r-card.dim { opacity: 0.15; pointer-events: none; }
+  .r-card.dim { opacity: 0.12; pointer-events: none; filter: grayscale(0.8); }
 
   /* Sidebar */
   #sidebar {
@@ -58,69 +68,76 @@
     top: 56px; left: 0; bottom: 0;
     width: 220px;
     z-index: 8;
-    background: #ffffff;
-    border-right: 1.5px solid #e2e8f0;
+    background: linear-gradient(180deg, #0f0f1a, #0a0a12);
+    border-right: 1px solid #1e293b;
     display: flex;
     flex-direction: column;
     padding: 20px 16px;
-    box-shadow: 2px 0 16px rgba(15,23,42,0.04), 0 -1px 0 rgba(0,0,0,0.02);
+    box-shadow: 4px 0 30px rgba(0,0,0,0.5);
   }
   #sidebar .sb-logo {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     padding-bottom: 16px;
     margin-bottom: 16px;
-    border-bottom: 1.5px solid #e2e8f0;
+    border-bottom: 1px solid #1e293b;
   }
   #sidebar .sb-logo .sb-icon {
-    width: 32px; height: 32px;
+    width: 40px; height: 40px;
     border-radius: 10px;
-    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    background: var(--brand);
     display: flex; align-items: center; justify-content: center;
-    color: #fff; font-weight: 800; font-size: 15px;
-    box-shadow: 0 2px 8px rgba(79,70,229,0.25);
+    color: #fff; font-weight: 800; font-size: 16px;
+    box-shadow: 0 4px 20px var(--brand-glow);
+    overflow: hidden;
+  }
+  #sidebar .sb-logo .sb-icon img {
+    width: 100%; height: 100%; object-fit: cover;
   }
   #sidebar .sb-logo .sb-title {
-    font-size: 16px; font-weight: 700; color: #0f172a;
+    font-size: 18px; font-weight: 700; color: #f1f5f9;
     letter-spacing: -0.01em;
   }
   #sidebar .sb-logo .sb-sub {
-    font-size: 10px; color: #94a3b8; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;
+    font-size: 10px; color: var(--brand-light); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
   }
   #sidebar .sb-section { margin-bottom: 16px; }
   #sidebar .sb-section h3 {
-    font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
-    color: #94a3b8; margin-bottom: 8px; padding-left: 2px;
+    font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;
+    color: #64748b; margin-bottom: 10px; padding-left: 2px;
   }
   #sidebar .sb-stat {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 10px;
-    border-radius: 8px;
-    transition: background 0.1s;
+    padding: 10px 12px;
+    border-radius: 10px;
+    transition: all 0.2s;
+    background: rgba(30,41,59,0.5);
+    margin-bottom: 6px;
+    border: 1px solid transparent;
   }
-  #sidebar .sb-stat:hover { background: #f8fafc; }
+  #sidebar .sb-stat:hover { background: rgba(220,38,38,0.08); border-color: rgba(220,38,38,0.15); }
   #sidebar .sb-stat .sb-label {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     font-size: 13px;
     font-weight: 500;
-    color: #475569;
+    color: #94a3b8;
   }
   #sidebar .sb-stat .sb-value {
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 700;
-    color: #0f172a;
+    color: #f1f5f9;
     font-variant-numeric: tabular-nums;
   }
-  #sidebar .sb-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-  #sidebar .sb-dot.m { background: #6366f1; }
-  #sidebar .sb-dot.c { background: #10b981; }
-  #sidebar .sb-dot.p { background: #8b5cf6; }
-  #sidebar .sb-dot.r { background: #f59e0b; }
+  #sidebar .sb-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 8px currentColor; }
+  #sidebar .sb-dot.m { background: var(--brand); color: var(--brand); }
+  #sidebar .sb-dot.c { background: #34d399; color: #34d399; }
+  #sidebar .sb-dot.p { background: #c084fc; color: #c084fc; }
+  #sidebar .sb-dot.r { background: #fbbf24; color: #fbbf24; }
 
   /* SVG lines */
   #line-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
@@ -128,118 +145,134 @@
   /* Modal */
   #modal-overlay {
     position: fixed; inset: 0; z-index: 50;
-    background: rgba(15,23,42,0.55);
+    background: rgba(0,0,0,0.75);
     display: none; align-items: center; justify-content: center;
-    animation: fadeIn 0.15s ease;
+    animation: fadeIn 0.2s ease;
+    backdrop-filter: blur(8px);
   }
   #modal-overlay.open { display: flex; }
-  #modal { background: #fff; border-radius: 20px; width: 880px; max-width: 94vw; max-height: 88vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(15,23,42,0.08), 0 32px 80px rgba(15,23,42,0.14); }
+  #modal { background: linear-gradient(135deg, #1a1a2e, #12121a); border-radius: 20px; width: 880px; max-width: 94vw; max-height: 88vh; overflow-y: auto; box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 100px rgba(220,38,38,0.08); border: 1px solid #334155; }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-  .sec-panel { border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; background: #fafbfc; }
-  .sec-panel h3 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 10px; }
+  .sec-panel { border: 1px solid #1e293b; border-radius: 12px; padding: 16px; background: rgba(15,23,42,0.5); }
+  .sec-panel h3 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--brand-light); margin-bottom: 10px; }
 
-  .sub-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 14px; cursor: pointer; transition: all 0.1s ease; border-left: 4px solid transparent; }
-  .sub-card:hover { border-color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-  .sub-card.ctrl { border-left-color: #10b981; }
-  .sub-card.prov { border-left-color: #8b5cf6; }
+  .sub-card { background: rgba(30,41,59,0.6); border: 1px solid #1e293b; border-radius: 10px; padding: 12px 14px; cursor: pointer; transition: all 0.2s ease; border-left: 4px solid transparent; }
+  .sub-card:hover { border-color: #475569; box-shadow: 0 4px 16px rgba(0,0,0,0.3); background: rgba(30,41,59,0.8); }
+  .sub-card.ctrl { border-left-color: #34d399; }
+  .sub-card.prov { border-left-color: #c084fc; }
 
-  .r-b { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
-  .r-b.GET { background: #dcfce7; color: #166534; }
-  .r-b.POST { background: #ffedd5; color: #9a3412; }
-  .r-b.PUT { background: #dbeafe; color: #1e40af; }
-  .r-b.PATCH { background: #f3e8ff; color: #6d28d9; }
-  .r-b.DELETE { background: #fee2e2; color: #991b1b; }
+  .r-b { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.03em; }
+  .r-b.GET { background: rgba(52,211,153,0.15); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+  .r-b.POST { background: rgba(251,146,60,0.15); color: #fb923c; border: 1px solid rgba(251,146,60,0.3); }
+  .r-b.PUT { background: rgba(96,165,250,0.15); color: #60a5fa; border: 1px solid rgba(96,165,250,0.3); }
+  .r-b.PATCH { background: rgba(192,132,252,0.15); color: #c084fc; border: 1px solid rgba(192,132,252,0.3); }
+  .r-b.DELETE { background: rgba(248,113,113,0.15); color: #f87171; border: 1px solid rgba(248,113,113,0.3); }
 
-  .spec-entry { padding: 12px 16px; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; }
+  .spec-entry { padding: 12px 16px; background: rgba(30,41,59,0.5); border: 1px solid #1e293b; border-radius: 10px; }
 
   /* Focus mode hint */
   #focus-hint {
     position: fixed; top: 62px; left: 50%; transform: translateX(-50%); z-index: 25;
-    background: rgba(239,68,68,0.08); border: 1.5px solid rgba(239,68,68,0.35);
-    border-radius: 12px; padding: 7px 20px;
-    font-size: 13px; color: #dc2626; font-weight: 600; letter-spacing: 0.01em;
+    background: rgba(220,38,38,0.15); border: 1.5px solid rgba(220,38,38,0.5);
+    border-radius: 12px; padding: 8px 24px;
+    font-size: 13px; color: #fca5a5; font-weight: 600; letter-spacing: 0.02em;
     display: none; pointer-events: none;
-    backdrop-filter: blur(12px);
-    box-shadow: 0 4px 16px rgba(239,68,68,0.1);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 8px 32px rgba(220,38,38,0.2), 0 0 60px rgba(220,38,38,0.1);
   }
   #focus-hint.show { display: block; }
 
   /* Onboarding notice - modern floating card */
   #onboard-notice > div {
-    border: 1.5px solid #e2e8f0;
+    border: 1px solid #334155;
     border-radius: 16px;
     box-shadow:
-      0 8px 24px -4px rgba(15,23,42,0.08),
-      0 24px 48px -12px rgba(15,23,42,0.12),
-      0 2px 4px -2px rgba(0,0,0,0.04);
-    padding: 18px 22px;
-    background: #ffffff;
-    transition: transform 0.15s ease;
+      0 12px 40px -4px rgba(0,0,0,0.5),
+      0 0 60px rgba(220,38,38,0.08);
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #1a1a2e, #16161d);
+    transition: all 0.2s ease;
+    backdrop-filter: blur(16px);
   }
   #onboard-notice > div:hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
     box-shadow:
-      0 12px 32px -4px rgba(15,23,42,0.1),
-      0 32px 64px -12px rgba(15,23,42,0.16);
+      0 16px 48px -4px rgba(0,0,0,0.6),
+      0 0 80px rgba(220,38,38,0.12);
+    border-color: var(--brand);
   }
 
   #context-menu {
-    position: fixed; z-index: 100; background: #fff; border: 1px solid #e2e8f0;
-    border-radius: 12px; padding: 4px; min-width: 200px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.12); display: none;
+    position: fixed; z-index: 100; background: #1a1a2e; border: 1px solid #334155;
+    border-radius: 12px; padding: 6px; min-width: 200px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.5); display: none;
+    backdrop-filter: blur(16px);
   }
   #context-menu .ctx-item {
     display: flex; align-items: center; gap: 10px; width: 100%;
-    padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 500;
-    color: #334155; background: none; border: none; cursor: pointer;
-    text-align: left; transition: background 0.1s;
+    padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 500;
+    color: #e2e8f0; background: none; border: none; cursor: pointer;
+    text-align: left; transition: all 0.15s;
   }
-  #context-menu .ctx-item:hover { background: #f1f5f9; }
-  #context-menu .ctx-delim { height: 1px; background: #e2e8f0; margin: 2px 8px; }
+  #context-menu .ctx-item:hover { background: rgba(220,38,38,0.12); }
+  #context-menu .ctx-delim { height: 1px; background: #1e293b; margin: 4px 12px; }
 
   /* Red borders for focus mode */
   .r-card.focused {
-    border-color: #dc2626 !important; border-width: 2px !important;
-    box-shadow: 0 0 0 3px rgba(220,38,38,0.15);
+    border-color: var(--brand) !important; border-width: 2px !important;
+    box-shadow: 0 0 0 4px rgba(220,38,38,0.25), 0 0 40px rgba(220,38,38,0.2);
   }
   .r-card.related {
-    border-color: #dc2626 !important; border-width: 2px !important;
+    border-color: var(--brand) !important; border-width: 2px !important;
   }
   .r-card.dragging { z-index: 10; cursor: grabbing; transition: none !important; }
 
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-  * { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #0a0a0f; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 6px; }
+  ::-webkit-scrollbar-thumb:hover { background: #475569; }
+  * { scrollbar-width: thin; scrollbar-color: #334155 #0a0a0f; }
+
+  /* Control Bar */
+  #control-bar { transition: transform 0.3s ease; }
+  #control-bar button { transition: all 0.15s ease; }
+  #control-bar button:active { transform: scale(0.95); }
+
+  /* Shortcuts Modal */
+  #shortcuts-overlay { animation: fadeIn 0.15s ease; }
+  #shortcuts-overlay > div { animation: slideUp 0.2s ease; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
   @media (max-width: 640px) { #modal { border-radius: 16px; } .modal-2col { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 
-<div id="loading" class="fixed inset-0 z-[60] flex items-center justify-center bg-white">
-  <div class="flex flex-col items-center gap-3">
-    <div class="w-8 h-8 border-2 border-slate-200 border-t-indigo-500 rounded-full animate-spin"></div>
+<div id="loading" class="fixed inset-0 z-[60] flex items-center justify-center bg-[#0a0a0f]">
+  <div class="flex flex-col items-center gap-4">
+    <div class="w-10 h-10 border-2 border-red-500/30 border-t-red-600 rounded-full animate-spin" style="box-shadow: 0 0 30px rgba(220,38,38,0.4);"></div>
     <p class="text-sm font-medium text-slate-400">Loading map…</p>
   </div>
 </div>
 
 <!-- Header -->
-<header class="fixed top-0 left-0 right-0 z-10 border-b border-slate-200 bg-white/95 backdrop-blur-sm shadow-sm">
+<header class="fixed top-0 left-0 right-0 z-10 border-b border-slate-800 bg-[#0a0a0f]/90 backdrop-blur-md shadow-lg shadow-black/30">
   <div class="h-14 flex items-center justify-between px-4" style="padding-left: 252px;">
     <div class="relative flex-1 max-w-[240px]">
-      <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
-      <input id="search-input" type="text" placeholder="Search modules…" autocomplete="off" class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-sm bg-white outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100/60 transition-all font-['Inter'] placeholder:text-slate-400">
+      <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
+      <input id="search-input" type="text" placeholder="Search modules…" autocomplete="off" class="w-full pl-9 pr-3 py-2 border border-slate-700 rounded-lg text-sm bg-slate-900/80 text-slate-200 outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all font-['Inter'] placeholder:text-slate-500">
     </div>
-    <span id="mod-count" class="text-xs font-semibold text-slate-500 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200 flex-shrink-0"></span>
+    <span id="mod-count" class="text-xs font-semibold text-red-400 bg-red-500/10 px-3 py-1.5 rounded-lg border border-red-500/20 flex-shrink-0"></span>
   </div>
 </header>
 
 <!-- Sidebar -->
 <aside id="sidebar">
   <div class="sb-logo">
-    <div class="sb-icon">N</div>
+    <div class="sb-icon">
+      <img src="logo.png" alt="NestLens" />
+    </div>
     <div>
       <div class="sb-title">NestLens</div>
       <div class="sb-sub">Architecture Map</div>
@@ -272,11 +305,11 @@
 <!-- Context menu -->
 <div id="context-menu" onclick="event.stopPropagation()">
   <button class="ctx-item" onclick="showRelationships()">
-    <span class="w-2 h-2 rounded-full bg-red-500 flex-shrink-0"></span>
+    <span class="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" style="box-shadow: 0 0 8px rgba(220,38,38,0.5);"></span>
     Show Relationships
   </button>
   <button class="ctx-item" onclick="hideRelationships()">
-    <span class="w-2 h-2 rounded-full bg-slate-400 flex-shrink-0"></span>
+    <span class="w-2 h-2 rounded-full bg-slate-500 flex-shrink-0"></span>
     Hide Relationships
   </button>
 </div>
@@ -287,81 +320,150 @@
   <div>
     <div class="flex items-start justify-between gap-4">
       <div class="space-y-3">
-        <div class="flex items-center gap-2 font-bold text-slate-800 text-sm">
-          <svg width="16" height="16" fill="none" stroke="#6366f1" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z"/></svg>
+        <div class="flex items-center gap-2 font-bold text-slate-100 text-sm">
+          <svg width="16" height="16" fill="none" stroke="#EF4444" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z"/></svg>
           Understanding the Lines
         </div>
         <div class="space-y-2">
-          <div class="flex items-center gap-3 text-[12px] text-slate-600">
-            <span class="font-mono font-bold text-slate-500 w-14 flex-shrink-0 text-right text-[13px] tracking-wide">───▶</span>
-            <span><strong class="text-slate-800 font-semibold">Solid</strong> — AppModule depends on this module</span>
+          <div class="flex items-center gap-3 text-[12px] text-slate-400">
+            <span class="font-mono font-bold text-red-400 w-14 flex-shrink-0 text-right text-[13px] tracking-wide">───▶</span>
+            <span><strong class="text-slate-200 font-semibold">Solid</strong> — AppModule depends on this module</span>
           </div>
-          <div class="flex items-center gap-3 text-[12px] text-slate-600">
-            <span class="font-mono font-bold text-slate-500 w-14 flex-shrink-0 text-right text-[13px] tracking-wide">- - -▶</span>
-            <span><strong class="text-slate-800 font-semibold">Dashed</strong> — source module depends on the target</span>
+          <div class="flex items-center gap-3 text-[12px] text-slate-400">
+            <span class="font-mono font-bold text-red-400 w-14 flex-shrink-0 text-right text-[13px] tracking-wide">- - -▶</span>
+            <span><strong class="text-slate-200 font-semibold">Dashed</strong> — source module depends on the target</span>
           </div>
-          <div class="flex items-center gap-3 text-[12px] text-slate-600">
-            <span class="flex items-center justify-end w-14 flex-shrink-0"><svg width="20" height="10" viewBox="0 0 20 10" fill="none"><line x1="0" y1="5" x2="14" y2="5" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/><path d="M14 2L19 5L14 8" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></span>
-            <span><strong class="text-slate-800 font-semibold">Red</strong> — focused module's relationships</span>
+          <div class="flex items-center gap-3 text-[12px] text-slate-400">
+            <span class="flex items-center justify-end w-14 flex-shrink-0"><svg width="20" height="10" viewBox="0 0 20 10" fill="none"><line x1="0" y1="5" x2="14" y2="5" stroke="#EF4444" stroke-width="2.5" stroke-linecap="round"/><path d="M14 2L19 5L14 8" stroke="#EF4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></span>
+            <span><strong class="text-slate-200 font-semibold">Red</strong> — focused module's relationships</span>
           </div>
         </div>
       </div>
-      <button onclick="dismissNotice()" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 flex-shrink-0 -mr-1 -mt-1 transition-colors">
+      <button onclick="dismissNotice()" class="p-1.5 rounded-lg hover:bg-slate-800 text-slate-500 hover:text-slate-300 flex-shrink-0 -mr-1 -mt-1 transition-colors">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
     </div>
   </div>
 </div>
 
-<main class="fixed inset-0 pt-14 grid-bg" id="diagram-container" style="left: 220px;">
+<main class="fixed inset-0 pt-14 pb-12 grid-bg" id="diagram-container" style="left: 220px;">
   <div id="diagram-area" class="relative w-full h-full overflow-hidden">
     <div id="pan-layer" class="absolute inset-0">
       <svg id="line-svg" class="overflow-visible">
         <defs>
           <marker id="arr-slate" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-            <path d="M0,0 L8,3 L0,6" fill="#64748b"/>
+            <path d="M0,0 L8,3 L0,6" fill="#DC2626"/>
           </marker>
           <marker id="arr-red" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-            <path d="M0,0 L8,3 L0,6" fill="#dc2626"/>
+            <path d="M0,0 L8,3 L0,6" fill="#EF4444"/>
           </marker>
         </defs>
       </svg>
       <div id="card-layer" class="absolute inset-0"></div>
     </div>
     <div id="diagram-empty" class="absolute inset-0 flex items-center justify-center hidden pointer-events-none">
-      <p class="text-base font-medium text-slate-400">No modules match your search.</p>
+      <p class="text-base font-medium text-slate-500">No modules match your search.</p>
     </div>
   </div>
 </main>
+
+<!-- Bottom Control Bar -->
+<div id="control-bar" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-20 w-fit bg-[#0a0a0f]/90 backdrop-blur-md border border-slate-800 rounded-2xl shadow-lg shadow-black/30">
+  <div class="h-13 flex items-center gap-1 px-2 py-1.5">
+    <!-- Zoom -->
+    <div class="flex items-center gap-1.5 px-3">
+      <button onclick="zoomOut()" class="w-8 h-8 rounded-lg bg-slate-800/80 border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-red-500/20 hover:border-red-500/30 hover:text-red-400 transition-all" title="Zoom Out">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6"/></svg>
+      </button>
+      <span id="zoom-level" class="text-xs text-slate-400 font-mono w-10 text-center">100%</span>
+      <button onclick="zoomIn()" class="w-8 h-8 rounded-lg bg-slate-800/80 border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-red-500/20 hover:border-red-500/30 hover:text-red-400 transition-all" title="Zoom In">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6"/></svg>
+      </button>
+      <button onclick="zoomReset()" class="w-8 h-8 rounded-lg bg-slate-800/80 border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-red-500/20 hover:border-red-500/30 hover:text-red-400 transition-all" title="Reset">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+      </button>
+    </div>
+
+    <div class="w-px h-6 bg-slate-700/60"></div>
+
+    <!-- Layout -->
+    <div class="flex items-center gap-1.5 px-3">
+      <button onclick="setLayout('radial')" id="layout-radial" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30 transition-all" title="Radial Layout">
+        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="inline mr-1"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="4" r="2"/><circle cx="12" cy="20" r="2"/><circle cx="4" cy="12" r="2"/><circle cx="20" cy="12" r="2"/></svg>
+        Radial
+      </button>
+      <button onclick="setLayout('tree')" id="layout-tree" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800/80 text-slate-400 border border-slate-700 hover:bg-slate-700/80 hover:text-slate-300 transition-all" title="Tree Layout">
+        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="inline mr-1"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h6"/></svg>
+        Tree
+      </button>
+      <button onclick="setLayout('cards')" id="layout-cards" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800/80 text-slate-400 border border-slate-700 hover:bg-slate-700/80 hover:text-slate-300 transition-all" title="Cards Layout">
+        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="inline mr-1"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        Cards
+      </button>
+    </div>
+
+    <div class="w-px h-6 bg-slate-700/60"></div>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-1.5 px-3">
+      <button onclick="toggleFullscreen()" class="w-8 h-8 rounded-lg bg-slate-800/80 border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-red-500/20 hover:border-red-500/30 hover:text-red-400 transition-all" title="Fullscreen">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+      </button>
+      <div class="w-px h-6 bg-slate-700/40"></div>
+      <button onclick="showShortcuts()" class="w-8 h-8 rounded-lg bg-slate-800/80 border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-red-500/20 hover:border-red-500/30 hover:text-red-400 transition-all" title="Keyboard Shortcuts">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Shortcuts Modal -->
+<div id="shortcuts-overlay" class="fixed inset-0 z-[70] bg-black/70 backdrop-blur-sm hidden items-center justify-center" onclick="if(event.target===this)hideShortcuts()">
+  <div class="bg-[#1a1a2e] border border-slate-700 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-bold text-slate-100">Keyboard Shortcuts</h3>
+      <button onclick="hideShortcuts()" class="p-1.5 rounded-lg hover:bg-slate-800 text-slate-500 hover:text-slate-300"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <div class="space-y-3">
+      <div class="flex justify-between items-center py-2 border-b border-slate-800"><span class="text-sm text-slate-300">Zoom In</span><kbd class="px-2 py-1 bg-slate-800 rounded text-xs text-slate-400 font-mono">Ctrl + +</kbd></div>
+      <div class="flex justify-between items-center py-2 border-b border-slate-800"><span class="text-sm text-slate-300">Zoom Out</span><kbd class="px-2 py-1 bg-slate-800 rounded text-xs text-slate-400 font-mono">Ctrl + -</kbd></div>
+      <div class="flex justify-between items-center py-2 border-b border-slate-800"><span class="text-sm text-slate-300">Reset View</span><kbd class="px-2 py-1 bg-slate-800 rounded text-xs text-slate-400 font-mono">Ctrl + 0</kbd></div>
+      <div class="flex justify-between items-center py-2 border-b border-slate-800"><span class="text-sm text-slate-300">Fullscreen</span><kbd class="px-2 py-1 bg-slate-800 rounded text-xs text-slate-400 font-mono">F11</kbd></div>
+      <div class="flex justify-between items-center py-2 border-b border-slate-800"><span class="text-sm text-slate-300">Focus Mode</span><kbd class="px-2 py-1 bg-slate-800 rounded text-xs text-slate-400 font-mono">Click + Drag</kbd></div>
+      <div class="flex justify-between items-center py-2 border-b border-slate-800"><span class="text-sm text-slate-300">Search</span><kbd class="px-2 py-1 bg-slate-800 rounded text-xs text-slate-400 font-mono">Ctrl + F</kbd></div>
+      <div class="flex justify-between items-center py-2"><span class="text-sm text-slate-300">Close Modal</span><kbd class="px-2 py-1 bg-slate-800 rounded text-xs text-slate-400 font-mono">Escape</kbd></div>
+    </div>
+  </div>
+</div>
 
 <!-- Modal -->
 <div id="modal-overlay" onclick="if(event.target===this)closeModal()">
   <div id="modal" onclick="event.stopPropagation()">
     <div id="modal-view-module">
-      <div class="flex items-center justify-between px-6 py-5 border-b border-slate-200">
+      <div class="flex items-center justify-between px-6 py-5 border-b border-slate-800">
         <div class="flex items-center gap-3">
-          <div id="mm-icon" class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold text-lg">A</div>
-          <div><h2 id="mm-title" class="text-lg font-bold text-neutral-900"></h2><p class="text-xs text-slate-400">Module Blueprint</p></div>
+          <div id="mm-icon" class="w-12 h-12 rounded-xl bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center text-white font-bold text-lg shadow-lg" style="box-shadow: 0 4px 20px rgba(220,38,38,0.4);">A</div>
+          <div><h2 id="mm-title" class="text-lg font-bold text-slate-100"></h2><p class="text-xs text-red-400 font-medium">Module Blueprint</p></div>
         </div>
-        <button onclick="closeModal()" class="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-600"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+        <button onclick="closeModal()" class="p-2 rounded-xl hover:bg-slate-800 text-slate-500 hover:text-slate-300 transition-colors"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
       </div>
       <div class="p-6">
         <div class="modal-2col grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="sec-panel"><h3>Imports / Dependencies</h3><p class="text-[11px] text-slate-400 mb-2.5 leading-snug">Modules that this module depends on to operate — they must be present at runtime.</p><div id="mm-imports" class="space-y-1.5"></div></div>
-          <div class="sec-panel"><h3>Controllers &amp; Endpoints</h3><p class="text-[11px] text-slate-400 mb-2.5 leading-snug">HTTP routes that this module exposes to clients — the public API surface.</p><div id="mm-controllers" class="space-y-2"></div></div>
-          <div class="sec-panel"><h3>Providers &amp; Services</h3><p class="text-[11px] text-slate-400 mb-2.5 leading-snug">Injectable classes that hold business logic — they power the module's behaviour.</p><div id="mm-providers" class="space-y-2"></div></div>
-          <div class="sec-panel"><h3>Exports (Shared API)</h3><p class="text-[11px] text-slate-400 mb-2.5 leading-snug">Providers and modules re-exported so other modules can use them via dependency injection.</p><div id="mm-exports" class="space-y-1.5"></div></div>
+          <div class="sec-panel"><h3>Imports / Dependencies</h3><p class="text-[11px] text-slate-500 mb-2.5 leading-snug">Modules that this module depends on to operate — they must be present at runtime.</p><div id="mm-imports" class="space-y-1.5"></div></div>
+          <div class="sec-panel"><h3>Controllers &amp; Endpoints</h3><p class="text-[11px] text-slate-500 mb-2.5 leading-snug">HTTP routes that this module exposes to clients — the public API surface.</p><div id="mm-controllers" class="space-y-2"></div></div>
+          <div class="sec-panel"><h3>Providers &amp; Services</h3><p class="text-[11px] text-slate-500 mb-2.5 leading-snug">Injectable classes that hold business logic — they power the module's behaviour.</p><div id="mm-providers" class="space-y-2"></div></div>
+          <div class="sec-panel"><h3>Exports (Shared API)</h3><p class="text-[11px] text-slate-500 mb-2.5 leading-snug">Providers and modules re-exported so other modules can use them via dependency injection.</p><div id="mm-exports" class="space-y-1.5"></div></div>
         </div>
       </div>
     </div>
     <div id="modal-view-component" class="hidden">
-      <div class="flex items-center justify-between px-6 py-5 border-b border-slate-200">
+      <div class="flex items-center justify-between px-6 py-5 border-b border-slate-800">
         <div class="flex items-center gap-3">
-          <button onclick="popComponentView()" class="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-600 mr-1"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
-          <div id="mc-icon" class="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-lg">A</div>
-          <div><h2 id="mc-title" class="text-lg font-bold text-neutral-900"></h2><p id="mc-sub" class="text-xs text-slate-400"></p></div>
+          <button onclick="popComponentView()" class="p-2 rounded-xl hover:bg-slate-800 text-slate-500 hover:text-slate-300 mr-1 transition-colors"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
+          <div id="mc-icon" class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg">A</div>
+          <div><h2 id="mc-title" class="text-lg font-bold text-slate-100"></h2><p id="mc-sub" class="text-xs text-red-400 font-medium"></p></div>
         </div>
-        <button onclick="closeModal()" class="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-600"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+        <button onclick="closeModal()" class="p-2 rounded-xl hover:bg-slate-800 text-slate-500 hover:text-slate-300 transition-colors"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
       </div>
       <div class="p-6" id="mc-body"></div>
     </div>
@@ -516,13 +618,13 @@ function renderRadial(filter) {
            oncontextmenu="showContextMenu(event,'${root.name}')"
            data-module="${root.name}">
         <div class="flex items-center justify-center gap-2 mb-1">
-          <div class="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-xs">${root.name.charAt(0)}</div>
-          <span class="text-sm font-bold text-neutral-900">${root.name}</span>
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center text-white font-bold text-sm shadow-lg" style="box-shadow: 0 4px 20px rgba(220,38,38,0.4);">${root.name.charAt(0)}</div>
+          <span class="text-sm font-bold text-slate-100">${root.name}</span>
         </div>
         <div class="flex items-center justify-center gap-1.5">
-          ${rc ? `<span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">${rc}C</span>` : ''}
-          ${rp ? `<span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-violet-50 text-violet-700 border border-violet-200">${rp}P</span>` : ''}
-          ${ri ? `<span class="text-[11px] font-medium text-slate-400">${ri}I</span>` : ''}
+          ${rc ? `<span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">${rc}C</span>` : ''}
+          ${rp ? `<span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-400 border border-purple-500/30">${rp}P</span>` : ''}
+          ${ri ? `<span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-sky-500/15 text-sky-400 border border-sky-500/30">${ri}I</span>` : ''}
         </div>
       </div>`;
   }
@@ -539,12 +641,13 @@ function renderRadial(filter) {
            oncontextmenu="showContextMenu(event,'${m.name}')"
            data-module="${m.name}">
         <div class="flex items-center justify-center gap-1.5 mb-1">
-          <div class="w-6 h-6 rounded-md bg-indigo-500 flex items-center justify-center text-white font-bold text-[10px] flex-shrink-0">${m.name.charAt(0)}</div>
-          <span class="text-xs font-bold text-neutral-900">${m.name}</span>
+          <div class="w-6 h-6 rounded-md bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center text-white font-bold text-[10px] flex-shrink-0 shadow-md" style="box-shadow: 0 2px 10px rgba(220,38,38,0.3);">${m.name.charAt(0)}</div>
+          <span class="text-xs font-bold text-slate-100">${m.name}</span>
         </div>
         <div class="flex items-center justify-center gap-1.5">
-          ${cc ? `<span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">${cc}C</span>` : ''}
-          ${pc ? `<span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-violet-50 text-violet-700 border border-violet-200">${pc}P</span>` : ''}
+          ${cc ? `<span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">${cc}C</span>` : ''}
+          ${pc ? `<span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-purple-500/15 text-purple-400 border border-purple-500/30">${pc}P</span>` : ''}
+          ${m.imports.length ? `<span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-sky-500/15 text-sky-400 border border-sky-500/30">${m.imports.length}I</span>` : ''}
         </div>
       </div>`;
   });
@@ -558,6 +661,76 @@ function renderRadial(filter) {
   drawLinesFromDOM();
 
   // Enable dragging
+  makeCardsDraggable();
+}
+
+// ===== RENDER CARDS (Inventory Layout) =====
+function renderCards(filter) {
+  const q = (filter || '').toLowerCase().trim();
+  const mods = q ? data.modules.filter(m => m.name.toLowerCase().includes(q)) : data.modules;
+
+  const empty = document.getElementById('diagram-empty');
+  if (!mods.length) {
+    empty.classList.remove('hidden');
+    document.getElementById('card-layer').innerHTML = '';
+    document.getElementById('line-svg').querySelectorAll('line, polygon').forEach(l => l.remove());
+    document.getElementById('mod-count').textContent = '0 modules';
+    return;
+  }
+  empty.classList.add('hidden');
+
+  focusModule = null;
+  document.getElementById('focus-hint').classList.remove('show');
+
+  const layer = document.getElementById('card-layer');
+  const area = document.getElementById('diagram-area');
+  const W = area.clientWidth;
+
+  // Clear lines
+  const svg = document.getElementById('line-svg');
+  svg.querySelectorAll('line, polygon').forEach(l => l.remove());
+
+  // Grid layout
+  const cardW = 200;
+  const cardH = 120;
+  const gapX = 24;
+  const gapY = 20;
+  const cols = Math.max(1, Math.floor((W - 40) / (cardW + gapX)));
+  const offsetX = (W - cols * (cardW + gapX) + gapX) / 2;
+
+  let html = '';
+  mods.forEach((m, i) => {
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    const x = offsetX + col * (cardW + gapX) + cardW / 2;
+    const y = 40 + row * (cardH + gapY) + cardH / 2;
+
+    const cc = m.controllers.length;
+    const pc = m.providers.length;
+    const ri = m.imports.length;
+
+    html += `
+      <div class="r-card" style="left:${x}px;top:${y}px;min-width:${cardW}px;width:${cardW}px;min-height:${cardH}px;transform:translate(-50%,-50%);text-align:left;padding:16px 18px;"
+           onclick="openModuleModal('${m.name}')"
+           oncontextmenu="showContextMenu(event,'${m.name}')"
+           data-module="${m.name}">
+        <div class="flex items-center gap-2.5 mb-3">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-lg" style="box-shadow: 0 4px 16px rgba(220,38,38,0.3);">${m.name.charAt(0)}</div>
+          <div class="min-w-0">
+            <div class="text-sm font-bold text-slate-100 truncate">${m.name}</div>
+            <div class="text-[10px] text-slate-500">${m.controllers.length + m.providers.length} component${m.controllers.length + m.providers.length !== 1 ? 's' : ''}</div>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-1.5">
+          ${cc ? `<span class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">${cc} Controller${cc !== 1 ? 's' : ''}</span>` : ''}
+          ${pc ? `<span class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-400 border border-purple-500/30">${pc} Provider${pc !== 1 ? 's' : ''}</span>` : ''}
+          ${ri ? `<span class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-sky-500/15 text-sky-400 border border-sky-500/30">${ri} Import${ri !== 1 ? 's' : ''}</span>` : ''}
+        </div>
+      </div>`;
+  });
+
+  layer.innerHTML = html;
+  document.getElementById('mod-count').textContent = `${mods.length} module${mods.length !== 1 ? 's' : ''}`;
   makeCardsDraggable();
 }
 
@@ -636,10 +809,10 @@ function drawLinesFromDOM() {
     if (isFocused && focusModule !== root.name) return;
     const inFocus = isFocused && (name === focusModule || hasRelationship(name, focusModule));
     const strokeColor = isFocused
-      ? (inFocus ? '#dc2626' : 'rgba(148,163,184,0.18)')
-      : 'rgba(100,116,139,0.5)';
-    const strokeW = isFocused ? (inFocus ? 2 : 0.5) : 1.2;
-    const arrowColor = isFocused ? (inFocus ? '#dc2626' : null) : '#64748b';
+      ? (inFocus ? '#EF4444' : 'rgba(220,38,38,0.06)')
+      : 'rgba(220,38,38,0.35)';
+    const strokeW = isFocused ? (inFocus ? 2.5 : 0.5) : 1.5;
+    const arrowColor = isFocused ? (inFocus ? '#EF4444' : null) : '#DC2626';
     arrowLine(rootX, rootY, x, y, el, strokeColor, strokeW, null, arrowColor);
   });
 
@@ -653,10 +826,10 @@ function drawLinesFromDOM() {
       if (!imports.includes(to.name)) continue;
       const inFocus = isFocused && (from.name === focusModule || to.name === focusModule);
       const strokeColor = isFocused
-        ? (inFocus ? '#dc2626' : 'rgba(148,163,184,0.12)')
-        : 'rgba(100,116,139,0.35)';
-      const strokeW = isFocused ? (inFocus ? 2 : 0.5) : 1;
-      const arrowColor = isFocused ? (inFocus ? '#dc2626' : null) : '#64748b';
+        ? (inFocus ? '#EF4444' : 'rgba(220,38,38,0.04)')
+        : 'rgba(220,38,38,0.2)';
+      const strokeW = isFocused ? (inFocus ? 2.5 : 0.5) : 1;
+      const arrowColor = isFocused ? (inFocus ? '#EF4444' : null) : '#DC2626';
       arrowLine(from.x, from.y, to.x, to.y, to.el, strokeColor, strokeW, '5,5', arrowColor);
     }
   }
@@ -817,7 +990,9 @@ document.addEventListener('click', function(e) {
 
 // ===== SEARCH =====
 document.getElementById('search-input').addEventListener('input', function() {
-  renderRadial(this.value);
+  if (currentLayout === 'tree') renderTree(this.value);
+  else if (currentLayout === 'cards') renderCards(this.value);
+  else renderRadial(this.value);
 });
 
 // ===== MODAL =====
@@ -839,8 +1014,8 @@ function openModuleModal(modName) {
 
   const impEl = document.getElementById('mm-imports');
   impEl.innerHTML = mod.imports.length
-    ? mod.imports.map(i => `<div onclick="openDependencyModal('${i}')" class="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-white border border-slate-200 text-sm font-semibold text-slate-700 cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all"><svg width="14" height="14" fill="none" stroke="#6366f1" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3"/></svg>${i}</div>`).join('')
-    : '<p class="text-sm text-slate-400 italic px-1">No imports — root module.</p>';
+    ? mod.imports.map(i => `<div onclick="openDependencyModal('${i}')" class="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-slate-800/50 border border-slate-700 text-sm font-semibold text-slate-200 cursor-pointer hover:border-red-500/40 hover:bg-red-500/10 transition-all"><svg width="14" height="14" fill="none" stroke="#EF4444" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3"/></svg>${i}</div>`).join('')
+    : '<p class="text-sm text-slate-500 italic px-1">No imports — root module.</p>';
 
   const ctrlEl = document.getElementById('mm-controllers');
   if (mod.controllers.length) {
@@ -848,10 +1023,10 @@ function openModuleModal(modName) {
       const c = data.controllers.find(ct => ct.name === cName);
       if (!c) return '';
       const methods = [...new Set(c.routers.map(r => r.method))];
-      return `<div class="sub-card ctrl" onclick="event.stopPropagation();openControllerSheet('${cName}')"><div class="flex items-center justify-between mb-1.5"><span class="text-sm font-bold text-slate-800">${c.name}</span><span class="text-xs font-mono font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">${c.prefix}</span></div><div class="flex flex-wrap gap-1">${methods.map(m => `<span class="r-b ${m}">${m}</span>`).join('')}<span class="text-xs text-slate-400 ml-1">(${c.routers.length} route${c.routers.length > 1 ? 's' : ''})</span></div></div>`;
+      return `<div class="sub-card ctrl" onclick="event.stopPropagation();openControllerSheet('${cName}')"><div class="flex items-center justify-between mb-1.5"><span class="text-sm font-bold text-slate-100">${c.name}</span><span class="text-xs font-mono font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">${c.prefix}</span></div><div class="flex flex-wrap gap-1">${methods.map(m => `<span class="r-b ${m}">${m}</span>`).join('')}<span class="text-xs text-slate-500 ml-1">(${c.routers.length} route${c.routers.length > 1 ? 's' : ''})</span></div></div>`;
     }).join('');
   } else {
-    ctrlEl.innerHTML = '<p class="text-sm text-slate-400 italic px-1">No controllers in this module.</p>';
+    ctrlEl.innerHTML = '<p class="text-sm text-slate-500 italic px-1">No controllers in this module.</p>';
   }
 
   const provEl = document.getElementById('mm-providers');
@@ -859,16 +1034,16 @@ function openModuleModal(modName) {
     provEl.innerHTML = mod.providers.map(pName => {
       const p = data.providers.find(pr => pr.name === pName);
       if (!p) return '';
-      return `<div class="sub-card prov" onclick="event.stopPropagation();openProviderSheet('${pName}')"><div class="flex items-center justify-between"><span class="text-sm font-bold text-slate-800">${p.name}</span><span class="text-xs text-slate-400">${p.dependencies.length} dep${p.dependencies.length !== 1 ? 's' : ''} · ${p.services.length} method${p.services.length !== 1 ? 's' : ''}</span></div></div>`;
+      return `<div class="sub-card prov" onclick="event.stopPropagation();openProviderSheet('${pName}')"><div class="flex items-center justify-between"><span class="text-sm font-bold text-slate-100">${p.name}</span><span class="text-xs text-slate-500">${p.dependencies.length} dep${p.dependencies.length !== 1 ? 's' : ''} · ${p.services.length} method${p.services.length !== 1 ? 's' : ''}</span></div></div>`;
     }).join('');
   } else {
-    provEl.innerHTML = '<p class="text-sm text-slate-400 italic px-1">No providers in this module.</p>';
+    provEl.innerHTML = '<p class="text-sm text-slate-500 italic px-1">No providers in this module.</p>';
   }
 
   const expEl = document.getElementById('mm-exports');
   expEl.innerHTML = mod.exports.length
-    ? mod.exports.map(e => `<div onclick="openDependencyModal('${e}')" class="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-white border border-slate-200 text-sm font-semibold text-slate-700 cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all"><svg width="14" height="14" fill="none" stroke="#0ea5e9" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>${e}</div>`).join('')
-    : '<p class="text-sm text-slate-400 italic px-1">Nothing exported from this module.</p>';
+    ? mod.exports.map(e => `<div onclick="openDependencyModal('${e}')" class="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-slate-800/50 border border-slate-700 text-sm font-semibold text-slate-200 cursor-pointer hover:border-red-500/40 hover:bg-red-500/10 transition-all"><svg width="14" height="14" fill="none" stroke="#EF4444" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>${e}</div>`).join('')
+    : '<p class="text-sm text-slate-500 italic px-1">Nothing exported from this module.</p>';
 
   document.getElementById('modal-view-module').classList.remove('hidden');
   document.getElementById('modal-view-component').classList.add('hidden');
@@ -879,12 +1054,12 @@ function openControllerSheet(cName) {
   const c = data.controllers.find(ct => ct.name === cName);
   if (!c) return;
   document.getElementById('mc-title').textContent = c.name;
-  document.getElementById('mc-icon').className = 'w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-lg bg-emerald-600';
+  document.getElementById('mc-icon').className = 'w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/30';
   document.getElementById('mc-icon').textContent = c.name.charAt(0);
-  document.getElementById('mc-sub').innerHTML = `Controller · <code class="text-xs font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-500">${c.prefix}</code>`;
+  document.getElementById('mc-sub').innerHTML = `Controller · <code class="text-xs font-mono bg-slate-800 px-2 py-0.5 rounded text-emerald-400 border border-slate-700">${c.prefix}</code>`;
   document.getElementById('mc-body').innerHTML = `
-    <div class="mb-6"><h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">API Routes (${c.routers.length})</h3><div class="space-y-2">${c.routers.map(r => `<div class="spec-entry flex items-center gap-4"><span class="r-b ${r.method} flex-shrink-0 min-w-[52px] text-center">${r.method}</span><span class="font-mono text-sm font-medium text-slate-800 flex-1">${c.prefix}${r.path}</span><span class="text-xs text-slate-400">${r.name}</span></div>`).join('')}</div></div>
-    <div><h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Dependencies</h3><div class="flex flex-wrap gap-2">${c.dependencies.length ? c.dependencies.map(d => `<span onclick="openDependencyModal('${d}')" class="cursor-pointer px-3 py-1.5 rounded-lg text-sm font-medium bg-violet-50 text-violet-700 border border-violet-200 hover:border-violet-400 hover:bg-violet-100 transition-all">${d}</span>`).join('') : '<span class="text-sm text-slate-400 italic">None</span>'}</div></div>`;
+    <div class="mb-6"><h3 class="text-xs font-semibold text-red-400 uppercase tracking-wider mb-3">API Routes (${c.routers.length})</h3><div class="space-y-2">${c.routers.map(r => `<div class="spec-entry flex items-center gap-4"><span class="r-b ${r.method} flex-shrink-0 min-w-[56px] text-center">${r.method}</span><span class="font-mono text-sm font-medium text-slate-200 flex-1">${c.prefix}${r.path}</span><span class="text-xs text-slate-500">${r.name}</span></div>`).join('')}</div></div>
+    <div><h3 class="text-xs font-semibold text-red-400 uppercase tracking-wider mb-3">Dependencies</h3><div class="flex flex-wrap gap-2">${c.dependencies.length ? c.dependencies.map(d => `<span onclick="openDependencyModal('${d}')" class="cursor-pointer px-3 py-1.5 rounded-lg text-sm font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20 hover:border-purple-500/40 hover:bg-purple-500/20 transition-all">${d}</span>`).join('') : '<span class="text-sm text-slate-500 italic">None</span>'}</div></div>`;
   document.getElementById('modal-view-module').classList.add('hidden');
   document.getElementById('modal-view-component').classList.remove('hidden');
 }
@@ -893,12 +1068,12 @@ function openProviderSheet(pName) {
   const p = data.providers.find(pr => pr.name === pName);
   if (!p) return;
   document.getElementById('mc-title').textContent = p.name;
-  document.getElementById('mc-icon').className = 'w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-lg bg-violet-600';
+  document.getElementById('mc-icon').className = 'w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg bg-gradient-to-br from-purple-500 to-violet-600 shadow-lg shadow-purple-500/30';
   document.getElementById('mc-icon').textContent = p.name.charAt(0);
   document.getElementById('mc-sub').textContent = 'Provider / Injectable Service';
   document.getElementById('mc-body').innerHTML = `
-    <div class="mb-6"><h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Injected Dependencies</h3><div class="flex flex-wrap gap-2">${p.dependencies.length ? p.dependencies.map(d => `<span onclick="openDependencyModal('${d}')" class="cursor-pointer px-3 py-1.5 rounded-lg text-sm font-medium bg-violet-50 text-violet-700 border border-violet-200 hover:border-violet-400 hover:bg-violet-100 transition-all">${d}</span>`).join('') : '<span class="text-sm text-slate-400 italic">None (standalone)</span>'}</div></div>
-    <div><h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Public Methods (${p.services.length})</h3><div class="grid grid-cols-2 sm:grid-cols-3 gap-2">${p.services.map(s => `<div class="spec-entry text-sm font-mono text-slate-700 text-center">${s.name}()</div>`).join('')}</div></div>`;
+    <div class="mb-6"><h3 class="text-xs font-semibold text-red-400 uppercase tracking-wider mb-3">Injected Dependencies</h3><div class="flex flex-wrap gap-2">${p.dependencies.length ? p.dependencies.map(d => `<span onclick="openDependencyModal('${d}')" class="cursor-pointer px-3 py-1.5 rounded-lg text-sm font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20 hover:border-purple-500/40 hover:bg-purple-500/20 transition-all">${d}</span>`).join('') : '<span class="text-sm text-slate-500 italic">None (standalone)</span>'}</div></div>
+    <div><h3 class="text-xs font-semibold text-red-400 uppercase tracking-wider mb-3">Public Methods (${p.services.length})</h3><div class="grid grid-cols-2 sm:grid-cols-3 gap-2">${p.services.map(s => `<div class="spec-entry text-sm font-mono text-slate-300 text-center">${s.name}()</div>`).join('')}</div></div>`;
   document.getElementById('modal-view-module').classList.add('hidden');
   document.getElementById('modal-view-component').classList.remove('hidden');
 }
@@ -922,12 +1097,29 @@ function closeModal() {
 }
 
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') {
+  // Zoom shortcuts
+  if ((e.ctrlKey || e.metaKey) && e.key === '=') {
+    e.preventDefault();
+    zoomIn();
+  } else if ((e.ctrlKey || e.metaKey) && e.key === '-') {
+    e.preventDefault();
+    zoomOut();
+  } else if ((e.ctrlKey || e.metaKey) && e.key === '0') {
+    e.preventDefault();
+    zoomReset();
+  } else if (e.key === 'F11') {
+    e.preventDefault();
+    toggleFullscreen();
+  } else if (e.key === 'Escape') {
     if (contextMenuTarget) { hideContextMenu(); return; }
     if (focusModule) {
       focusModule = null;
       document.getElementById('focus-hint').classList.remove('show');
       drawLinesFromDOM();
+      return;
+    }
+    if (!document.getElementById('shortcuts-overlay').classList.contains('hidden')) {
+      hideShortcuts();
       return;
     }
     if (!document.getElementById('modal-view-component').classList.contains('hidden')) popComponentView();
@@ -938,8 +1130,240 @@ document.addEventListener('keydown', function(e) {
 // ===== RESIZE =====
 window.addEventListener('resize', function() {
   clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => renderRadial(document.getElementById('search-input').value), 150);
+  resizeTimer = setTimeout(() => {
+    const v = document.getElementById('search-input').value;
+    if (currentLayout === 'tree') renderTree(v);
+    else if (currentLayout === 'cards') renderCards(v);
+    else renderRadial(v);
+  }, 150);
 });
+
+// ===== ZOOM CONTROLS =====
+let zoomLevel = 1;
+const minZoom = 0.3;
+const maxZoom = 3;
+const zoomStep = 0.1;
+
+function updateZoom() {
+  const panLayer = document.getElementById('pan-layer');
+  panLayer.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
+  document.getElementById('zoom-level').textContent = Math.round(zoomLevel * 100) + '%';
+}
+
+function zoomIn() {
+  if (zoomLevel < maxZoom) {
+    zoomLevel = Math.min(maxZoom, zoomLevel + zoomStep);
+    updateZoom();
+  }
+}
+
+function zoomOut() {
+  if (zoomLevel > minZoom) {
+    zoomLevel = Math.max(minZoom, zoomLevel - zoomStep);
+    updateZoom();
+  }
+}
+
+function zoomReset() {
+  zoomLevel = 1;
+  panX = 0;
+  panY = 0;
+  updatePan();
+  updateZoom();
+}
+
+// Mouse wheel zoom
+document.getElementById('diagram-area').addEventListener('wheel', function(e) {
+  if (e.ctrlKey || e.metaKey) {
+    e.preventDefault();
+    if (e.deltaY < 0) zoomIn();
+    else zoomOut();
+  }
+}, { passive: false });
+
+// ===== LAYOUT CONTROLS =====
+let currentLayout = 'radial';
+
+function setLayout(layout) {
+  currentLayout = layout;
+  const active = 'px-3 py-1.5 rounded-lg text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30 transition-all';
+  const inactive = 'px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800/80 text-slate-400 border border-slate-700 hover:bg-slate-700/80 hover:text-slate-300 transition-all';
+  document.getElementById('layout-radial').className = layout === 'radial' ? active : inactive;
+  document.getElementById('layout-tree').className = layout === 'tree' ? active : inactive;
+  document.getElementById('layout-cards').className = layout === 'cards' ? active : inactive;
+  const filter = document.getElementById('search-input').value;
+  if (currentLayout === 'tree') renderTree(filter);
+  else if (currentLayout === 'cards') renderCards(filter);
+  else renderRadial(filter);
+}
+
+// ===== RENDER TREE DIAGRAM =====
+function renderTree(filter) {
+  const q = (filter || '').toLowerCase().trim();
+
+  const root = data.modules.find(m => m.name === 'AppModule')
+    || data.modules.find(m => m.imports.length === 0)
+    || data.modules[0];
+  const rootName = root.name;
+
+  const others = data.modules.filter(m => m.name !== rootName);
+  const filtered = q ? others.filter(m => m.name.toLowerCase().includes(q)) : others;
+  const rootVisible = !q || rootName.toLowerCase().includes(q);
+
+  const empty = document.getElementById('diagram-empty');
+  if (!rootVisible && !filtered.length) {
+    empty.classList.remove('hidden');
+    document.getElementById('card-layer').innerHTML = '';
+    document.getElementById('line-svg').querySelectorAll('line, polygon').forEach(l => l.remove());
+    document.getElementById('mod-count').textContent = '0 modules';
+    return;
+  }
+  empty.classList.add('hidden');
+
+  focusModule = null;
+  document.getElementById('focus-hint').classList.remove('show');
+
+  const layer = document.getElementById('card-layer');
+  const area = document.getElementById('diagram-area');
+  const W = area.clientWidth;
+  const H = area.clientHeight;
+
+  // Build tree levels
+  const visited = new Set();
+  const levels = [];
+
+  function buildTree(modName, level) {
+    if (visited.has(modName)) return;
+    visited.add(modName);
+    if (!levels[level]) levels[level] = [];
+    levels[level].push(modName);
+    const mod = data.modules.find(m => m.name === modName);
+    if (!mod) return;
+    mod.imports.forEach(imp => {
+      if (!visited.has(imp) && filtered.some(f => f.name === imp)) {
+        buildTree(imp, level + 1);
+      }
+    });
+  }
+
+  if (rootVisible) buildTree(rootName, 0);
+
+  // Also add any unvisited modules at bottom level
+  filtered.forEach(m => {
+    if (!visited.has(m.name)) {
+      if (!levels[1]) levels[1] = [];
+      levels[1].push(m.name);
+      visited.add(m.name);
+    }
+  });
+
+  const rowGap = 100;
+  const cardW = 140;
+  const startY = 80;
+
+  let html = '';
+
+  // Build positions map
+  const positions = {};
+  levels.forEach((level, li) => {
+    const y = startY + li * rowGap;
+    const totalW = level.length * cardW;
+    const startX = (W - totalW) / 2 + cardW / 2;
+    level.forEach((modName, mi) => {
+      positions[modName] = { x: startX + mi * cardW, y };
+    });
+  });
+
+  // Draw cards
+  levels.forEach((level, li) => {
+    level.forEach(modName => {
+      const pos = positions[modName];
+      if (!pos) return;
+      const mod = data.modules.find(m => m.name === modName);
+      if (!mod) return;
+      const isRoot = modName === rootName;
+      const cc = mod.controllers.length;
+      const pc = mod.providers.length;
+      const ri = mod.imports.length;
+
+      html += `
+        <div class="r-card ${isRoot ? 'center' : ''}" style="left:${pos.x}px;top:${pos.y}px"
+             onclick="openModuleModal('${modName}')"
+             oncontextmenu="showContextMenu(event,'${modName}')"
+             data-module="${modName}">
+          <div class="flex items-center justify-center gap-1.5 mb-1">
+            <div class="w-6 h-6 rounded-md bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center text-white font-bold text-[10px] flex-shrink-0 shadow-md" style="box-shadow: 0 2px 10px rgba(220,38,38,0.3);">${modName.charAt(0)}</div>
+            <span class="text-xs font-bold text-slate-100">${modName}</span>
+          </div>
+          <div class="flex items-center justify-center gap-1.5">
+            ${cc ? `<span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">${cc}C</span>` : ''}
+            ${pc ? `<span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-purple-500/15 text-purple-400 border border-purple-500/30">${pc}P</span>` : ''}
+            ${ri ? `<span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-sky-500/15 text-sky-400 border border-sky-500/30">${ri}I</span>` : ''}
+          </div>
+        </div>`;
+    });
+  });
+
+  layer.innerHTML = html;
+  document.getElementById('mod-count').textContent = `${data.modules.length} module${data.modules.length !== 1 ? 's' : ''}`;
+
+  // Draw tree lines
+  const svg = document.getElementById('line-svg');
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.setAttribute('width', W);
+  svg.setAttribute('height', H);
+  svg.querySelectorAll('line, polygon').forEach(l => l.remove());
+
+  let linesHtml = '';
+  levels.forEach(level => {
+    level.forEach(modName => {
+      const mod = data.modules.find(m => m.name === modName);
+      if (!mod) return;
+      const from = positions[modName];
+      if (!from) return;
+      mod.imports.forEach(imp => {
+        const to = positions[imp];
+        if (!to) return;
+        const cardEl = document.querySelector(`[data-module="${imp}"]`);
+        const hw = cardEl ? cardEl.offsetWidth / 2 : 60;
+        const hh = cardEl ? cardEl.offsetHeight / 2 : 28;
+
+        // Line from parent bottom to child top
+        const x1 = from.x, y1 = from.y + hh;
+        const x2 = to.x, y2 = to.y - hh;
+
+        linesHtml += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="rgba(220,38,38,0.35)" stroke-width="1.5"/>`;
+
+        // Arrowhead
+        const a = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+        linesHtml += `<polygon points="0,0 -7,-4 -7,4" fill="#DC2626" transform="translate(${x2},${y2}) rotate(${a})"/>`;
+      });
+    });
+  });
+  if (linesHtml) svg.insertAdjacentHTML('beforeend', linesHtml);
+
+  makeCardsDraggable();
+}
+
+// ===== FULLSCREEN =====
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(err => console.log('Fullscreen error:', err));
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+// ===== SHORTCUTS MODAL =====
+function showShortcuts() {
+  document.getElementById('shortcuts-overlay').classList.remove('hidden');
+  document.getElementById('shortcuts-overlay').classList.add('flex');
+}
+
+function hideShortcuts() {
+  document.getElementById('shortcuts-overlay').classList.add('hidden');
+  document.getElementById('shortcuts-overlay').classList.remove('flex');
+}
 
 function rebuildModuleMap() {
   moduleImportMap = {};
