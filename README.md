@@ -46,12 +46,12 @@ Reading through dozens of files just to understand "what talks to what" is tedio
 
 With NestLens, beginners can:
 
-| Before NestLens | After NestLens |
-|---|---|
-| Manually trace `@Module` decorators to understand relationships | See modules, imports, controllers, and providers at a glance |
-| Search files to find all routes and their HTTP methods | View all routes with method badges and full paths instantly |
-| Guess which services a controller depends on | Inspect constructor-injected dependencies directly from the UI |
-| Lose track of the big picture in large codebases | Get live summary statistics (modules, controllers, providers, routes) |
+| Before NestLens                                                 | After NestLens                                                        |
+| --------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Manually trace `@Module` decorators to understand relationships | See modules, imports, controllers, and providers at a glance          |
+| Search files to find all routes and their HTTP methods          | View all routes with method badges and full paths instantly           |
+| Guess which services a controller depends on                    | Inspect constructor-injected dependencies directly from the UI        |
+| Lose track of the big picture in large codebases                | Get live summary statistics (modules, controllers, providers, routes) |
 
 ---
 
@@ -100,15 +100,15 @@ With NestLens, beginners can:
 
 ## 🧠 Concepts Used
 
-| Concept | How It Is Used |
-|---|---|
-| **Abstract Syntax Tree (AST)** | The TypeScript Compiler API represents source code as an AST; we walk this tree to find decorated classes |
-| **TypeScript Compiler API** | `ts.createProgram()` compiles the project in memory, giving us access to all source files and their type information |
-| **Decorator Pattern** | NestJS uses decorators (`@Module`, `@Controller`, `@Injectable`) as metadata — we parse these to extract the architecture |
-| **Static Analysis** | The entire analysis happens at compile time — no runtime execution of the target project is needed |
-| **Dependency Injection** | We inspect constructor parameters to map out which services each controller/provider depends on |
-| **Express Server** | A lightweight HTTP server serves the API and static assets |
-| **Dynamic HTML Rendering** | Vanilla JavaScript builds the entire UI from the JSON data — modules, cards, modals, and SVG connector lines |
+| Concept                        | How It Is Used                                                                                                            |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| **Abstract Syntax Tree (AST)** | The TypeScript Compiler API represents source code as an AST; we walk this tree to find decorated classes                 |
+| **TypeScript Compiler API**    | `ts.createProgram()` compiles the project in memory, giving us access to all source files and their type information      |
+| **Decorator Pattern**          | NestJS uses decorators (`@Module`, `@Controller`, `@Injectable`) as metadata — we parse these to extract the architecture |
+| **Static Analysis**            | The entire analysis happens at compile time — no runtime execution of the target project is needed                        |
+| **Dependency Injection**       | We inspect constructor parameters to map out which services each controller/provider depends on                           |
+| **Express Server**             | A lightweight HTTP server serves the API and static assets                                                                |
+| **Dynamic HTML Rendering**     | Vanilla JavaScript builds the entire UI from the JSON data — modules, cards, modals, and SVG connector lines              |
 
 ---
 
@@ -233,6 +233,7 @@ npm run nestlens
 ```
 
 The server will:
+
 1. Analyze your NestJS project
 2. Start a server on **http://localhost:4000**
 3. Automatically open the dashboard in your default browser
@@ -244,6 +245,7 @@ The server will:
 The interactive dashboard interface (`package/client/index.html`) was designed and implemented with assistance from **[OpenCode AI](https://opencode.ai)** — an intelligent coding assistant that helped generate the HTML, CSS, and JavaScript for the visualisation layer.
 
 This collaboration allowed us to deliver a polished, professional UI with:
+
 - A cohesive dark cyber-aesthetic theme
 - Smooth animations and transitions
 - Clean, maintainable vanilla JavaScript

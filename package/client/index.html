@@ -1,1006 +1,965 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NestLens Architecture Map</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            background: #0b0d17;
-            color: #e0e0e0;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NestLens — Architecture Map</title>
+<script src="https://cdn.tailwindcss.com">
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #ffffff; color: #171717; overflow: hidden; height: 100vh; width: 100vw; }
 
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, #0f1228 0%, #1a1f3a 100%);
-            border-bottom: 1px solid #2a2f4a;
-            padding: 24px 40px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-        .header-title {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-        .header-title h1 {
-            font-size: 26px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #4ed9a6, #3ba4d9);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .header-title span {
-            font-size: 28px;
-        }
-        .header-stats {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        .stat {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid #2a2f4a;
-            border-radius: 8px;
-            padding: 8px 16px;
-            text-align: center;
-            min-width: 80px;
-        }
-        .stat-value {
-            font-size: 18px;
-            font-weight: 700;
-            color: #fff;
-        }
-        .stat-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #6b7280;
-            margin-top: 2px;
-        }
-        .stat.modules .stat-value { color: #4fc3f7; }
-        .stat.controllers .stat-value { color: #4ed9a6; }
-        .stat.providers .stat-value { color: #b388ff; }
-        .stat.routes .stat-value { color: #ffb74d; }
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(148,163,184,0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148,163,184,0.3) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
 
-        /* Main Layout */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 30px 40px 60px;
-        }
+  /* Radial card */
+  .r-card {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 2px 8px rgba(0,0,0,0.04);
+    text-align: center;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    min-width: 100px;
+    user-select: none;
+  }
+  .r-card:hover {
+    border-color: #6366f1;
+    box-shadow: 0 6px 20px rgba(99,102,241,0.15), 0 2px 6px rgba(99,102,241,0.08);
+    z-index: 5;
+  }
+  .r-card.center {
+    border-color: #4f46e5;
+    border-width: 2px;
+    background: linear-gradient(135deg, #eef2ff, #ffffff);
+    min-width: 130px;
+    padding: 14px 20px;
+    z-index: 3;
+    box-shadow: 0 4px 16px rgba(79,70,229,0.12), 0 8px 32px rgba(79,70,229,0.08);
+  }
+  .r-card.dim { opacity: 0.15; pointer-events: none; }
 
-        /* Legend */
-        .legend {
-            display: flex;
-            gap: 24px;
-            justify-content: center;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            color: #9ca3af;
-        }
-        .legend-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 4px;
-            flex-shrink: 0;
-        }
-        .legend-dot.module { background: #1e3a6f; border: 2px solid #4fc3f7; }
-        .legend-dot.controller { background: #1a4a3a; border: 2px solid #4ed9a6; }
-        .legend-dot.provider { background: #2d1f4a; border: 2px solid #b388ff; }
-        .legend-dot.route { background: #3d2e0a; border: 2px solid #ffb74d; }
+  /* Sidebar */
+  #sidebar {
+    position: fixed;
+    top: 56px; left: 0; bottom: 0;
+    width: 220px;
+    z-index: 8;
+    background: #ffffff;
+    border-right: 1.5px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 16px;
+    box-shadow: 2px 0 16px rgba(15,23,42,0.04), 0 -1px 0 rgba(0,0,0,0.02);
+  }
+  #sidebar .sb-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1.5px solid #e2e8f0;
+  }
+  #sidebar .sb-logo .sb-icon {
+    width: 32px; height: 32px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 15px;
+    box-shadow: 0 2px 8px rgba(79,70,229,0.25);
+  }
+  #sidebar .sb-logo .sb-title {
+    font-size: 16px; font-weight: 700; color: #0f172a;
+    letter-spacing: -0.01em;
+  }
+  #sidebar .sb-logo .sb-sub {
+    font-size: 10px; color: #94a3b8; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  #sidebar .sb-section { margin-bottom: 16px; }
+  #sidebar .sb-section h3 {
+    font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+    color: #94a3b8; margin-bottom: 8px; padding-left: 2px;
+  }
+  #sidebar .sb-stat {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-radius: 8px;
+    transition: background 0.1s;
+  }
+  #sidebar .sb-stat:hover { background: #f8fafc; }
+  #sidebar .sb-stat .sb-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #475569;
+  }
+  #sidebar .sb-stat .sb-value {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+    font-variant-numeric: tabular-nums;
+  }
+  #sidebar .sb-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  #sidebar .sb-dot.m { background: #6366f1; }
+  #sidebar .sb-dot.c { background: #10b981; }
+  #sidebar .sb-dot.p { background: #8b5cf6; }
+  #sidebar .sb-dot.r { background: #f59e0b; }
 
-        /* Tree wrapper */
-        .tree-wrapper {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+  /* SVG lines */
+  #line-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
 
-        /* Root Module */
-        .root-module {
-            position: relative;
-            z-index: 2;
-            margin-bottom: 0;
-        }
-        .root-card {
-            background: linear-gradient(135deg, #1a2a6c 0%, #162050 100%);
-            border: 2px solid #4fc3f7;
-            border-radius: 16px;
-            padding: 24px 40px;
-            text-align: center;
-            min-width: 240px;
-            box-shadow: 0 0 40px rgba(79, 195, 247, 0.15), 0 8px 32px rgba(0,0,0,0.4);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .root-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 60px rgba(79, 195, 247, 0.25), 0 12px 40px rgba(0,0,0,0.5);
-        }
-        .root-card .emoji {
-            font-size: 32px;
-            display: block;
-            margin-bottom: 6px;
-        }
-        .root-card .name {
-            font-size: 22px;
-            font-weight: 700;
-            color: #fff;
-        }
-        .root-card .sub {
-            font-size: 13px;
-            color: #8ba4d9;
-            margin-top: 4px;
-        }
-        .root-card .badges {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 12px;
-        }
-        .badge {
-            font-size: 11px;
-            font-weight: 600;
-            padding: 3px 10px;
-            border-radius: 20px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .badge.controller-badge {
-            background: rgba(78, 217, 166, 0.15);
-            color: #4ed9a6;
-            border: 1px solid rgba(78, 217, 166, 0.3);
-        }
-        .badge.provider-badge {
-            background: rgba(179, 136, 255, 0.15);
-            color: #b388ff;
-            border: 1px solid rgba(179, 136, 255, 0.3);
-        }
-        .badge.import-badge {
-            background: rgba(79, 195, 247, 0.15);
-            color: #4fc3f7;
-            border: 1px solid rgba(79, 195, 247, 0.3);
-        }
+  /* Modal */
+  #modal-overlay {
+    position: fixed; inset: 0; z-index: 50;
+    background: rgba(15,23,42,0.55);
+    display: none; align-items: center; justify-content: center;
+    animation: fadeIn 0.15s ease;
+  }
+  #modal-overlay.open { display: flex; }
+  #modal { background: #fff; border-radius: 20px; width: 880px; max-width: 94vw; max-height: 88vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(15,23,42,0.08), 0 32px 80px rgba(15,23,42,0.14); }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* SVG Connector */
-        .connector-svg {
-            width: 100%;
-            height: 80px;
-            flex-shrink: 0;
-            display: block;
-        }
+  .sec-panel { border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; background: #fafbfc; }
+  .sec-panel h3 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 10px; }
 
-        /* Modules Grid */
-        .modules-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            padding: 0 10px;
-            width: 100%;
-        }
+  .sub-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 14px; cursor: pointer; transition: all 0.1s ease; border-left: 4px solid transparent; }
+  .sub-card:hover { border-color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .sub-card.ctrl { border-left-color: #10b981; }
+  .sub-card.prov { border-left-color: #8b5cf6; }
 
-        /* Module Card */
-        .module-card {
-            background: linear-gradient(180deg, #13172e 0%, #0f1225 100%);
-            border: 1px solid #252a4a;
-            border-radius: 12px;
-            width: 220px;
-            min-height: 120px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .module-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #4fc3f7, #1e3a6f);
-            opacity: 0.6;
-            transition: opacity 0.3s;
-        }
-        .module-card:hover {
-            border-color: #4fc3f7;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(79, 195, 247, 0.12);
-        }
-        .module-card:hover::before {
-            opacity: 1;
-        }
-        .module-card .card-body {
-            padding: 16px 18px 14px;
-        }
-        .module-card .card-icon {
-            font-size: 20px;
-        }
-        .module-card .card-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #e8e8e8;
-            margin-top: 4px;
-        }
-        .module-card .card-meta {
-            display: flex;
-            gap: 12px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-        .module-card .card-meta .meta-item {
-            font-size: 12px;
-            color: #6b7280;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .module-card .card-meta .meta-item strong {
-            color: #c0c8e0;
-            font-weight: 600;
-        }
-        .module-card .card-meta .ctrl-count { color: #4ed9a6; }
-        .module-card .card-meta .prov-count { color: #b388ff; }
+  .r-b { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+  .r-b.GET { background: #dcfce7; color: #166534; }
+  .r-b.POST { background: #ffedd5; color: #9a3412; }
+  .r-b.PUT { background: #dbeafe; color: #1e40af; }
+  .r-b.PATCH { background: #f3e8ff; color: #6d28d9; }
+  .r-b.DELETE { background: #fee2e2; color: #991b1b; }
 
-        .module-card .expand-indicator {
-            position: absolute;
-            bottom: 6px;
-            right: 10px;
-            font-size: 10px;
-            color: #4a4f6a;
-            transition: transform 0.3s;
-        }
-        .module-card.expanded .expand-indicator {
-            transform: rotate(180deg);
-        }
+  .spec-entry { padding: 12px 16px; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; }
 
-        /* Expanded Details inside module */
-        .module-details {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease, opacity 0.3s ease;
-            opacity: 0;
-            border-top: 1px solid transparent;
-        }
-        .module-card.expanded .module-details {
-            max-height: 800px;
-            opacity: 1;
-            border-top-color: #252a4a;
-        }
-        .module-details .detail-section {
-            padding: 10px 18px 12px;
-        }
-        .module-details .detail-section + .detail-section {
-            border-top: 1px solid #1a1e35;
-        }
-        .module-details .detail-label {
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #6b7280;
-            margin-bottom: 8px;
-        }
-        .module-details .detail-items {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .detail-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            color: #c0c8e0;
-            padding: 4px 8px;
-            border-radius: 6px;
-            background: rgba(255,255,255,0.03);
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .detail-item:hover {
-            background: rgba(255,255,255,0.07);
-        }
-        .detail-item .item-icon {
-            font-size: 14px;
-        }
-        .detail-item .route-method {
-            font-size: 10px;
-            font-weight: 700;
-            padding: 2px 6px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-        .route-method.get { background: rgba(78, 217, 166, 0.15); color: #4ed9a6; }
-        .route-method.post { background: rgba(255, 183, 77, 0.15); color: #ffb74d; }
-        .route-method.put { background: rgba(79, 195, 247, 0.15); color: #4fc3f7; }
-        .route-method.patch { background: rgba(179, 136, 255, 0.15); color: #b388ff; }
-        .route-method.delete { background: rgba(239, 83, 80, 0.15); color: #ef5350; }
+  /* Focus mode hint */
+  #focus-hint {
+    position: fixed; top: 62px; left: 50%; transform: translateX(-50%); z-index: 25;
+    background: rgba(239,68,68,0.08); border: 1.5px solid rgba(239,68,68,0.35);
+    border-radius: 12px; padding: 7px 20px;
+    font-size: 13px; color: #dc2626; font-weight: 600; letter-spacing: 0.01em;
+    display: none; pointer-events: none;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 16px rgba(239,68,68,0.1);
+  }
+  #focus-hint.show { display: block; }
 
-        .detail-item .route-path {
-            color: #8ba4d9;
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 12px;
-        }
+  /* Onboarding notice - modern floating card */
+  #onboard-notice > div {
+    border: 1.5px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow:
+      0 8px 24px -4px rgba(15,23,42,0.08),
+      0 24px 48px -12px rgba(15,23,42,0.12),
+      0 2px 4px -2px rgba(0,0,0,0.04);
+    padding: 18px 22px;
+    background: #ffffff;
+    transition: transform 0.15s ease;
+  }
+  #onboard-notice > div:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      0 12px 32px -4px rgba(15,23,42,0.1),
+      0 32px 64px -12px rgba(15,23,42,0.16);
+  }
 
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(8px);
-            z-index: 1000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .modal-overlay.active {
-            display: flex;
-        }
-        .modal {
-            background: #13172e;
-            border: 1px solid #2a2f4a;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 580px;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-            animation: modalIn 0.25s ease;
-        }
-        @keyframes modalIn {
-            from { opacity: 0; transform: scale(0.95) translateY(10px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        .modal-header {
-            padding: 20px 24px 16px;
-            border-bottom: 1px solid #252a4a;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .modal-header h2 {
-            font-size: 18px;
-            font-weight: 700;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .modal-close {
-            background: none;
-            border: none;
-            color: #6b7280;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 6px;
-            transition: all 0.2s;
-            line-height: 1;
-        }
-        .modal-close:hover {
-            color: #fff;
-            background: rgba(255,255,255,0.08);
-        }
-        .modal-body {
-            padding: 20px 24px 24px;
-        }
-        .modal-body .modal-section {
-            margin-bottom: 20px;
-        }
-        .modal-body .modal-section:last-child {
-            margin-bottom: 0;
-        }
-        .modal-body .modal-section h3 {
-            font-size: 13px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #6b7280;
-            margin-bottom: 10px;
-        }
-        .modal-body .modal-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 6px 10px;
-            border-radius: 6px;
-            background: rgba(255,255,255,0.03);
-            margin-bottom: 4px;
-            font-size: 13px;
-        }
-        .modal-body .modal-row .label {
-            color: #9ca3af;
-            min-width: 70px;
-        }
-        .modal-body .modal-row .value {
-            color: #e0e0e0;
-        }
-        .modal-body .modal-row .value.mono {
-            font-family: 'Consolas', monospace;
-            font-size: 12px;
-            color: #8ba4d9;
-        }
+  #context-menu {
+    position: fixed; z-index: 100; background: #fff; border: 1px solid #e2e8f0;
+    border-radius: 12px; padding: 4px; min-width: 200px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12); display: none;
+  }
+  #context-menu .ctx-item {
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 500;
+    color: #334155; background: none; border: none; cursor: pointer;
+    text-align: left; transition: background 0.1s;
+  }
+  #context-menu .ctx-item:hover { background: #f1f5f9; }
+  #context-menu .ctx-delim { height: 1px; background: #e2e8f0; margin: 2px 8px; }
 
-        /* Loading */
-        .loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 60vh;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .loading .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #2a2f4a;
-            border-top-color: #4fc3f7;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .loading p {
-            color: #6b7280;
-            font-size: 14px;
-        }
+  /* Red borders for focus mode */
+  .r-card.focused {
+    border-color: #dc2626 !important; border-width: 2px !important;
+    box-shadow: 0 0 0 3px rgba(220,38,38,0.15);
+  }
+  .r-card.related {
+    border-color: #dc2626 !important; border-width: 2px !important;
+  }
+  .r-card.dragging { z-index: 10; cursor: grabbing; transition: none !important; }
 
-        /* Error */
-        .error {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 60vh;
-            color: #ef5350;
-            font-size: 18px;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .error .sub {
-            color: #6b7280;
-            font-size: 14px;
-        }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  * { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header {
-                padding: 16px 20px;
-            }
-            .header-title h1 {
-                font-size: 20px;
-            }
-            .container {
-                padding: 20px 16px 40px;
-            }
-            .modules-grid {
-                gap: 14px;
-            }
-            .module-card {
-                width: 100%;
-                max-width: 320px;
-            }
-            .root-card {
-                padding: 18px 24px;
-                min-width: auto;
-            }
-            .legend {
-                gap: 12px;
-            }
-            .header-stats .stat {
-                min-width: 60px;
-                padding: 6px 10px;
-            }
-            .stat-value {
-                font-size: 15px;
-            }
-        }
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .module-card {
-                width: calc(33.33% - 16px);
-                min-width: 180px;
-                max-width: 240px;
-            }
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0b0d17;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #2a2f4a;
-            border-radius: 3px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #3a3f5a;
-        }
-    </style>
+  @media (max-width: 640px) { #modal { border-radius: 16px; } .modal-2col { grid-template-columns: 1fr; } }
+</style>
 </head>
 <body>
 
-    <header class="header">
-        <div class="header-title">
-            <span>🏗️</span>
-            <h1>NestLens Architecture Map</h1>
-        </div>
-        <div class="header-stats" id="stats">
-            <div class="stat modules"><div class="stat-value">-</div><div class="stat-label">Modules</div></div>
-            <div class="stat controllers"><div class="stat-value">-</div><div class="stat-label">Controllers</div></div>
-            <div class="stat providers"><div class="stat-value">-</div><div class="stat-label">Providers</div></div>
-            <div class="stat routes"><div class="stat-value">-</div><div class="stat-label">Routes</div></div>
-        </div>
-    </header>
+<div id="loading" class="fixed inset-0 z-[60] flex items-center justify-center bg-white">
+  <div class="flex flex-col items-center gap-3">
+    <div class="w-8 h-8 border-2 border-slate-200 border-t-indigo-500 rounded-full animate-spin"></div>
+    <p class="text-sm font-medium text-slate-400">Loading map…</p>
+  </div>
+</div>
 
-    <div class="container" id="app">
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>Analyzing architecture...</p>
-        </div>
+<!-- Header -->
+<header class="fixed top-0 left-0 right-0 z-10 border-b border-slate-200 bg-white/95 backdrop-blur-sm shadow-sm">
+  <div class="h-14 flex items-center justify-between px-4" style="padding-left: 252px;">
+    <div class="relative flex-1 max-w-[240px]">
+      <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
+      <input id="search-input" type="text" placeholder="Search modules…" autocomplete="off" class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-sm bg-white outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100/60 transition-all font-['Inter'] placeholder:text-slate-400">
     </div>
+    <span id="mod-count" class="text-xs font-semibold text-slate-500 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200 flex-shrink-0"></span>
+  </div>
+</header>
 
-    <!-- Detail Modal -->
-    <div class="modal-overlay" id="modal">
-        <div class="modal">
-            <div class="modal-header">
-                <h2 id="modalTitle">Details</h2>
-                <button class="modal-close" id="modalClose">&times;</button>
-            </div>
-            <div class="modal-body" id="modalBody"></div>
-        </div>
+<!-- Sidebar -->
+<aside id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-icon">N</div>
+    <div>
+      <div class="sb-title">NestLens</div>
+      <div class="sb-sub">Architecture Map</div>
     </div>
+  </div>
+  <div class="sb-section">
+    <h3>Project Overview</h3>
+    <div class="sb-stat">
+      <span class="sb-label"><span class="sb-dot m"></span>Modules</span>
+      <span class="sb-value"><strong id="b-modules">0</strong></span>
+    </div>
+    <div class="sb-stat">
+      <span class="sb-label"><span class="sb-dot c"></span>Controllers</span>
+      <span class="sb-value"><strong id="b-controllers">0</strong></span>
+    </div>
+    <div class="sb-stat">
+      <span class="sb-label"><span class="sb-dot p"></span>Providers</span>
+      <span class="sb-value"><strong id="b-providers">0</strong></span>
+    </div>
+    <div class="sb-stat">
+      <span class="sb-label"><span class="sb-dot r"></span>Routes</span>
+      <span class="sb-value"><strong id="b-routes">0</strong></span>
+    </div>
+  </div>
+</aside>
 
-    <script>
-        (function() {
-            const COLORS = {
-                module: { bg: '#1e3a6f', border: '#4fc3f7' },
-                controller: { bg: '#1a4a3a', border: '#4ed9a6' },
-                provider: { bg: '#2d1f4a', border: '#b388ff' }
-            };
+<!-- Focus hint -->
+<div id="focus-hint">Focus mode — click background to reset</div>
 
-            let allData = null;
+<!-- Context menu -->
+<div id="context-menu" onclick="event.stopPropagation()">
+  <button class="ctx-item" onclick="showRelationships()">
+    <span class="w-2 h-2 rounded-full bg-red-500 flex-shrink-0"></span>
+    Show Relationships
+  </button>
+  <button class="ctx-item" onclick="hideRelationships()">
+    <span class="w-2 h-2 rounded-full bg-slate-400 flex-shrink-0"></span>
+    Hide Relationships
+  </button>
+</div>
 
-            // ─── DOM refs ───────────────────────────────────────────
-            const appEl = document.getElementById('app');
-            const loadingEl = document.getElementById('loading');
-            const modal = document.getElementById('modal');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalBody = document.getElementById('modalBody');
-            const modalClose = document.getElementById('modalClose');
+<!-- Diagram canvas -->
+<!-- Onboarding notice (dismissible) -->
+<div id="onboard-notice" class="fixed top-16 left-1/2 -translate-x-1/2 z-40" style="display:none">
+  <div>
+    <div class="flex items-start justify-between gap-4">
+      <div class="space-y-3">
+        <div class="flex items-center gap-2 font-bold text-slate-800 text-sm">
+          <svg width="16" height="16" fill="none" stroke="#6366f1" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z"/></svg>
+          Understanding the Lines
+        </div>
+        <div class="space-y-2">
+          <div class="flex items-center gap-3 text-[12px] text-slate-600">
+            <span class="font-mono font-bold text-slate-500 w-14 flex-shrink-0 text-right text-[13px] tracking-wide">───▶</span>
+            <span><strong class="text-slate-800 font-semibold">Solid</strong> — AppModule depends on this module</span>
+          </div>
+          <div class="flex items-center gap-3 text-[12px] text-slate-600">
+            <span class="font-mono font-bold text-slate-500 w-14 flex-shrink-0 text-right text-[13px] tracking-wide">- - -▶</span>
+            <span><strong class="text-slate-800 font-semibold">Dashed</strong> — source module depends on the target</span>
+          </div>
+          <div class="flex items-center gap-3 text-[12px] text-slate-600">
+            <span class="flex items-center justify-end w-14 flex-shrink-0"><svg width="20" height="10" viewBox="0 0 20 10" fill="none"><line x1="0" y1="5" x2="14" y2="5" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/><path d="M14 2L19 5L14 8" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></span>
+            <span><strong class="text-slate-800 font-semibold">Red</strong> — focused module's relationships</span>
+          </div>
+        </div>
+      </div>
+      <button onclick="dismissNotice()" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 flex-shrink-0 -mr-1 -mt-1 transition-colors">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
 
-            modalClose.addEventListener('click', () => modal.classList.remove('active'));
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) modal.classList.remove('active');
-            });
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') modal.classList.remove('active');
-            });
+<main class="fixed inset-0 pt-14 grid-bg" id="diagram-container" style="left: 220px;">
+  <div id="diagram-area" class="relative w-full h-full overflow-hidden">
+    <div id="pan-layer" class="absolute inset-0">
+      <svg id="line-svg" class="overflow-visible">
+        <defs>
+          <marker id="arr-slate" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L8,3 L0,6" fill="#64748b"/>
+          </marker>
+          <marker id="arr-red" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L8,3 L0,6" fill="#dc2626"/>
+          </marker>
+        </defs>
+      </svg>
+      <div id="card-layer" class="absolute inset-0"></div>
+    </div>
+    <div id="diagram-empty" class="absolute inset-0 flex items-center justify-center hidden pointer-events-none">
+      <p class="text-base font-medium text-slate-400">No modules match your search.</p>
+    </div>
+  </div>
+</main>
 
-            // ─── Fetch & Render ────────────────────────────────────
-            fetch('/api/data')
-                .then(r => r.json())
-                .then(data => {
-                    allData = data;
-                    renderAll(data);
-                })
-                .catch(err => {
-                    appEl.innerHTML = `
-                        <div class="error">
-                            ❌ Failed to load data
-                            <div class="sub">${err.message}</div>
-                        </div>
-                    `;
-                });
+<!-- Modal -->
+<div id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div id="modal" onclick="event.stopPropagation()">
+    <div id="modal-view-module">
+      <div class="flex items-center justify-between px-6 py-5 border-b border-slate-200">
+        <div class="flex items-center gap-3">
+          <div id="mm-icon" class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold text-lg">A</div>
+          <div><h2 id="mm-title" class="text-lg font-bold text-neutral-900"></h2><p class="text-xs text-slate-400">Module Blueprint</p></div>
+        </div>
+        <button onclick="closeModal()" class="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-600"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+      </div>
+      <div class="p-6">
+        <div class="modal-2col grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sec-panel"><h3>Imports / Dependencies</h3><p class="text-[11px] text-slate-400 mb-2.5 leading-snug">Modules that this module depends on to operate — they must be present at runtime.</p><div id="mm-imports" class="space-y-1.5"></div></div>
+          <div class="sec-panel"><h3>Controllers &amp; Endpoints</h3><p class="text-[11px] text-slate-400 mb-2.5 leading-snug">HTTP routes that this module exposes to clients — the public API surface.</p><div id="mm-controllers" class="space-y-2"></div></div>
+          <div class="sec-panel"><h3>Providers &amp; Services</h3><p class="text-[11px] text-slate-400 mb-2.5 leading-snug">Injectable classes that hold business logic — they power the module's behaviour.</p><div id="mm-providers" class="space-y-2"></div></div>
+          <div class="sec-panel"><h3>Exports (Shared API)</h3><p class="text-[11px] text-slate-400 mb-2.5 leading-snug">Providers and modules re-exported so other modules can use them via dependency injection.</p><div id="mm-exports" class="space-y-1.5"></div></div>
+        </div>
+      </div>
+    </div>
+    <div id="modal-view-component" class="hidden">
+      <div class="flex items-center justify-between px-6 py-5 border-b border-slate-200">
+        <div class="flex items-center gap-3">
+          <button onclick="popComponentView()" class="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-600 mr-1"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
+          <div id="mc-icon" class="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-lg">A</div>
+          <div><h2 id="mc-title" class="text-lg font-bold text-neutral-900"></h2><p id="mc-sub" class="text-xs text-slate-400"></p></div>
+        </div>
+        <button onclick="closeModal()" class="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-600"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+      </div>
+      <div class="p-6" id="mc-body"></div>
+    </div>
+  </div>
+</div>
 
-            // ─── Helpers ───────────────────────────────────────────
-            function countRoutes(data) {
-                let count = 0;
-                (data.controllers || []).forEach(c => {
-                    count += (c.routers || []).length;
-                });
-                return count;
-            }
+<script>
+// ===== DATA =====
+const DATA = {
+  "modules": [
+    { "name": "AppModule", "controllers": ["AuthController", "TaskController"], "providers": ["AuthService", "TaskService", "PrismaService"], "imports": ["DatabaseModule", "ConfigModule"], "exports": [] },
+    { "name": "AuthModule", "controllers": ["AuthController"], "providers": ["AuthService", "JwtService"], "imports": ["DatabaseModule", "ConfigModule"], "exports": ["AuthService"] },
+    { "name": "TaskModule", "controllers": ["TaskController"], "providers": ["TaskService"], "imports": ["DatabaseModule"], "exports": [] },
+    { "name": "DatabaseModule", "controllers": [], "providers": ["PrismaService", "DatabaseService"], "imports": [], "exports": ["PrismaService"] },
+    { "name": "ConfigModule", "controllers": [], "providers": ["ConfigService"], "imports": [], "exports": ["ConfigService"] }
+  ],
+  "controllers": [
+    { "name": "AuthController", "prefix": "/auth", "dependencies": ["AuthService"], "routers": [{ "name": "login", "path": "/login", "method": "POST" }, { "name": "register", "path": "/register", "method": "POST" }, { "name": "profile", "path": "/profile", "method": "GET" }] },
+    { "name": "TaskController", "prefix": "/tasks", "dependencies": ["TaskService"], "routers": [{ "name": "findAll", "path": "/", "method": "GET" }, { "name": "findOne", "path": "/:id", "method": "GET" }, { "name": "create", "path": "/", "method": "POST" }, { "name": "update", "path": "/:id", "method": "PUT" }, { "name": "remove", "path": "/:id", "method": "DELETE" }] }
+  ],
+  "providers": [
+    { "name": "AuthService", "dependencies": ["PrismaService", "JwtService", "ConfigService"], "services": [{ "name": "validateUser" }, { "name": "login" }, { "name": "register" }, { "name": "getProfile" }] },
+    { "name": "TaskService", "dependencies": ["PrismaService"], "services": [{ "name": "findAll" }, { "name": "findOne" }, { "name": "create" }, { "name": "update" }, { "name": "remove" }] },
+    { "name": "PrismaService", "dependencies": [], "services": [{ "name": "onModuleInit" }, { "name": "onModuleDestroy" }] },
+    { "name": "ConfigService", "dependencies": [], "services": [{ "name": "get" }, { "name": "getOrThrow" }] },
+    { "name": "JwtService", "dependencies": ["ConfigService"], "services": [{ "name": "sign" }, { "name": "verify" }, { "name": "decode" }] },
+    { "name": "DatabaseService", "dependencies": ["PrismaService"], "services": [{ "name": "connect" }, { "name": "disconnect" }, { "name": "cleanup" }] }
+  ]
+};
 
-            // ─── Render ────────────────────────────────────────────
-            function renderAll(data) {
-                const modules = data.modules || [];
-                const controllers = data.controllers || [];
-                const providers = data.providers || [];
+// ===== STATE =====
+let data = DATA;
+let focusModule = null;
+let dragging = null;
+let dragOccurred = false;
+let contextMenuTarget = null;
+let resizeTimer = null;
 
-                // Update stats
-                document.querySelector('.stat.modules .stat-value').textContent = modules.length;
-                document.querySelector('.stat.controllers .stat-value').textContent = controllers.length;
-                document.querySelector('.stat.providers .stat-value').textContent = providers.length;
-                document.querySelector('.stat.routes .stat-value').textContent = countRoutes(data);
+function calcStats(d) {
+  let r = 0; d.controllers.forEach(c => r += c.routers.length);
+  return { m: d.modules.length, c: d.controllers.length, p: d.providers.length, r };
+}
+function updateStats() {
+  const s = calcStats(data);
+  document.getElementById('b-modules').textContent = s.m;
+  document.getElementById('b-controllers').textContent = s.c;
+  document.getElementById('b-providers').textContent = s.p;
+  document.getElementById('b-routes').textContent = s.r;
+}
 
-                // Build lookups
-                const ctrlMap = {};
-                controllers.forEach(c => { ctrlMap[c.name] = c; });
-                const provMap = {};
-                providers.forEach(p => { provMap[p.name] = p; });
-                const modMap = {};
-                modules.forEach(m => { modMap[m.name] = m; });
+// ===== BUILD MODULE LOOKUP =====
+let moduleImportMap = {};
+data.modules.forEach(m => { moduleImportMap[m.name] = m.imports || []; });
 
-                // Find root
-                const appModule = modules.find(m => m.name === 'AppModule') || modules[0];
+function hasRelationship(a, b) {
+  if (a === b) return false;
+  const impA = moduleImportMap[a] || [];
+  const impB = moduleImportMap[b] || [];
+  return impA.includes(b) || impB.includes(a);
+}
 
-                // Build HTML
-                let html = '';
+// ===== RENDER RADIAL DIAGRAM =====
+function renderRadial(filter) {
+  const q = (filter || '').toLowerCase().trim();
 
-                // Legend
-                html += `
-                    <div class="legend">
-                        <div class="legend-item"><div class="legend-dot module"></div> Module</div>
-                        <div class="legend-item"><div class="legend-dot controller"></div> Controller</div>
-                        <div class="legend-item"><div class="legend-dot provider"></div> Provider / Service</div>
-                        <div class="legend-item"><div class="legend-dot route"></div> Route</div>
-                    </div>
-                `;
+  // Find root
+  const root = data.modules.find(m => m.name === 'AppModule')
+    || data.modules.find(m => m.imports.length === 0)
+    || data.modules[0];
+  const rootName = root.name;
 
-                html += '<div class="tree-wrapper">';
+  const others = data.modules.filter(m => m.name !== rootName);
+  const filtered = q ? others.filter(m => m.name.toLowerCase().includes(q)) : others;
+  const rootVisible = !q || rootName.toLowerCase().includes(q);
 
-                // Root module
-                const rootCtrlCount = appModule.controllers ? appModule.controllers.length : 0;
-                const rootProvCount = appModule.providers ? appModule.providers.length : 0;
-                const rootImportCount = appModule.imports ? appModule.imports.length : 0;
+  const empty = document.getElementById('diagram-empty');
+  if ((!rootVisible && !filtered.length)) {
+    empty.classList.remove('hidden');
+    document.getElementById('card-layer').innerHTML = '';
+    document.getElementById('line-svg').querySelectorAll('line').forEach(l => l.remove());
+    document.getElementById('mod-count').textContent = '0 modules';
+    return;
+  }
+  empty.classList.add('hidden');
 
-                html += `
-                    <div class="root-module">
-                        <div class="root-card" data-module="${appModule.name}">
-                            <span class="emoji">🏗️</span>
-                            <div class="name">${appModule.name}</div>
-                            <div class="sub">Root Module &bull; ${rootImportCount} dependencies</div>
-                            <div class="badges">
-                                <span class="badge import-badge">📦 ${rootImportCount} imports</span>
-                                <span class="badge controller-badge">🎛️ ${rootCtrlCount} controller${rootCtrlCount !== 1 ? 's' : ''}</span>
-                                <span class="badge provider-badge">⚙️ ${rootProvCount} provider${rootProvCount !== 1 ? 's' : ''}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
+  // Sort: related (imported by root) first, then unrelated
+  const rootImports = new Set(root.imports);
+  const related = filtered.filter(m => rootImports.has(m.name));
+  const unrelated = filtered.filter(m => !rootImports.has(m.name));
 
-                // SVG connector lines
-                const childModules = modules.filter(m => m.name !== appModule.name);
-                const childCount = childModules.length;
-                if (childCount > 0) {
-                    const svgWidth = Math.max(300, childCount * 180);
-                    html += `
-                        <svg class="connector-svg" viewBox="0 0 ${svgWidth} 80" preserveAspectRatio="xMidYMid meet">
-                            <!-- Vertical line from root center -->
-                            <line x1="${svgWidth / 2}" y1="0" x2="${svgWidth / 2}" y2="30"
-                                  stroke="#2a2f4a" stroke-width="2" stroke-dasharray="4,3"/>
-                            <!-- Horizontal spine -->
-                            <line x1="60" y1="30" x2="${svgWidth - 60}" y2="30"
-                                  stroke="#2a2f4a" stroke-width="2" stroke-dasharray="4,3"/>
-                            ${childModules.map((_, i) => {
-                                const x = 60 + (i / (childCount - 1 || 1)) * (svgWidth - 120);
-                                return `<line x1="${x}" y1="30" x2="${x}" y2="78" stroke="#2a2f4a" stroke-width="2" stroke-dasharray="4,3"/>`;
-                            }).join('')}
-                        </svg>
-                    `;
-                }
+  // Within related and unrelated, place modules with shared relationships adjacent
+  const sorted = [];
+  const used = new Set();
+  function addGroup(list) {
+    const remaining = [...list];
+    while (remaining.length) {
+      const first = remaining.shift();
+      if (used.has(first.name)) continue;
+      sorted.push(first);
+      used.add(first.name);
+      // find adjacent modules with relationships
+      let found = true;
+      while (found) {
+        found = false;
+        for (let i = 0; i < remaining.length; i++) {
+          if (used.has(remaining[i].name)) continue;
+          if (hasRelationship(sorted[sorted.length - 1].name, remaining[i].name)) {
+            sorted.push(remaining[i]);
+            used.add(remaining[i].name);
+            remaining.splice(i, 1);
+            found = true;
+            break;
+          }
+        }
+      }
+    }
+  }
+  addGroup(related);
+  addGroup(unrelated);
 
-                // Module cards
-                html += '<div class="modules-grid">';
-                childModules.forEach(mod => {
-                    const cCount = mod.controllers ? mod.controllers.length : 0;
-                    const pCount = mod.providers ? mod.providers.length : 0;
-                    html += `
-                        <div class="module-card" data-module="${mod.name}">
-                            <div class="card-body">
-                                <div class="card-icon">📦</div>
-                                <div class="card-title">${mod.name}</div>
-                                <div class="card-meta">
-                                    <span class="meta-item ctrl-count">🎛️ <strong>${cCount}</strong></span>
-                                    <span class="meta-item prov-count">⚙️ <strong>${pCount}</strong></span>
-                                </div>
-                            </div>
-                            <div class="module-details">
-                                ${buildModuleDetails(mod, ctrlMap, provMap)}
-                            </div>
-                            <div class="expand-indicator">▼</div>
-                        </div>
-                    `;
-                });
-                html += '</div>'; // modules-grid
-                html += '</div>'; // tree-wrapper
+  // Build card layer
+  const layer = document.getElementById('card-layer');
+  // Reset focus when filter changes
+  focusModule = null;
+  document.getElementById('focus-hint').classList.remove('show');
 
-                appEl.innerHTML = html;
+  // Layout positions
+  const N = sorted.length;
+  const area = document.getElementById('diagram-area');
+  const W = area.clientWidth;
+  const H = area.clientHeight;
+  const cx = W / 2;
+  const cy = H / 2;
 
-                // ─── Event binding ─────────────────────────────────
-                // Click on root card -> show module detail modal
-                document.querySelector('.root-card').addEventListener('click', function() {
-                    const modName = this.dataset.module;
-                    showModuleModal(modName, modMap, ctrlMap, provMap);
-                });
+  // cards have ~120px width, so min radius ensures no overlap
+  const cardW = 120;
+  const cardH = 56;
+  const circumference = N * cardW * 1.15;
+  const minR = circumference / (2 * Math.PI);
+  const radius = Math.max(minR, Math.min(W, H) * 0.3);
 
-                // Click on module card header -> toggle expand
-                document.querySelectorAll('.module-card').forEach(card => {
-                    const body = card.querySelector('.card-body');
-                    body.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        card.classList.toggle('expanded');
-                    });
+  // Build cards HTML
+  let html = '';
 
-                    // Click on detail items (controller/provider) -> show detail modal
-                    card.querySelectorAll('.detail-item').forEach(item => {
-                        item.addEventListener('click', function(e) {
-                            e.stopPropagation();
-                            const type = this.dataset.type;
-                            const name = this.dataset.name;
-                            if (type === 'controller') {
-                                showControllerModal(name, ctrlMap);
-                            } else if (type === 'provider') {
-                                showProviderModal(name, provMap);
-                            }
-                        });
-                    });
-                });
-            }
+  if (rootVisible) {
+    const rc = root.controllers.length;
+    const rp = root.providers.length;
+    const ri = root.imports.length;
+    html += `
+      <div class="r-card center" style="left:${cx}px;top:${cy}px"
+           onclick="openModuleModal('${root.name}')"
+           oncontextmenu="showContextMenu(event,'${root.name}')"
+           data-module="${root.name}">
+        <div class="flex items-center justify-center gap-2 mb-1">
+          <div class="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-xs">${root.name.charAt(0)}</div>
+          <span class="text-sm font-bold text-neutral-900">${root.name}</span>
+        </div>
+        <div class="flex items-center justify-center gap-1.5">
+          ${rc ? `<span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">${rc}C</span>` : ''}
+          ${rp ? `<span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-violet-50 text-violet-700 border border-violet-200">${rp}P</span>` : ''}
+          ${ri ? `<span class="text-[11px] font-medium text-slate-400">${ri}I</span>` : ''}
+        </div>
+      </div>`;
+  }
 
-            // ─── Build module details HTML ─────────────────────────
-            function buildModuleDetails(mod, ctrlMap, provMap) {
-                let html = '';
+  sorted.forEach((m, i) => {
+    const angle = (i / N) * 2 * Math.PI - Math.PI / 2;
+    const x = cx + radius * Math.cos(angle);
+    const y = cy + radius * Math.sin(angle);
+    const cc = m.controllers.length;
+    const pc = m.providers.length;
+    html += `
+      <div class="r-card" style="left:${x}px;top:${y}px"
+           onclick="openModuleModal('${m.name}')"
+           oncontextmenu="showContextMenu(event,'${m.name}')"
+           data-module="${m.name}">
+        <div class="flex items-center justify-center gap-1.5 mb-1">
+          <div class="w-6 h-6 rounded-md bg-indigo-500 flex items-center justify-center text-white font-bold text-[10px] flex-shrink-0">${m.name.charAt(0)}</div>
+          <span class="text-xs font-bold text-neutral-900">${m.name}</span>
+        </div>
+        <div class="flex items-center justify-center gap-1.5">
+          ${cc ? `<span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">${cc}C</span>` : ''}
+          ${pc ? `<span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-violet-50 text-violet-700 border border-violet-200">${pc}P</span>` : ''}
+        </div>
+      </div>`;
+  });
 
-                // Controllers
-                if (mod.controllers && mod.controllers.length > 0) {
-                    html += `<div class="detail-section">
-                        <div class="detail-label">🎛️ Controllers</div>
-                        <div class="detail-items">`;
-                    mod.controllers.forEach(name => {
-                        const ctrl = ctrlMap[name];
-                        const routeCount = ctrl ? (ctrl.routers ? ctrl.routers.length : 0) : 0;
-                        html += `<div class="detail-item" data-type="controller" data-name="${name}">
-                            <span class="item-icon">🎛️</span> ${name}
-                            <span style="margin-left:auto;font-size:11px;color:#6b7280;">${routeCount} route${routeCount !== 1 ? 's' : ''}</span>
-                        </div>`;
-                    });
-                    html += `</div></div>`;
-                }
+  layer.innerHTML = html;
 
-                // Providers
-                if (mod.providers && mod.providers.length > 0) {
-                    html += `<div class="detail-section">
-                        <div class="detail-label">⚙️ Providers</div>
-                        <div class="detail-items">`;
-                    mod.providers.forEach(name => {
-                        const prov = provMap[name];
-                        const svcCount = prov ? (prov.services ? prov.services.length : 0) : 0;
-                        html += `<div class="detail-item" data-type="provider" data-name="${name}">
-                            <span class="item-icon">⚙️</span> ${name}
-                            <span style="margin-left:auto;font-size:11px;color:#6b7280;">${svcCount} method${svcCount !== 1 ? 's' : ''}</span>
-                        </div>`;
-                    });
-                    html += `</div></div>`;
-                }
+  document.getElementById('mod-count').textContent =
+    `${data.modules.length} module${data.modules.length !== 1 ? 's' : ''}`;
 
-                // Imports
-                if (mod.imports && mod.imports.length > 0) {
-                    html += `<div class="detail-section">
-                        <div class="detail-label">📦 Imports</div>
-                        <div class="detail-items">`;
-                    mod.imports.forEach(name => {
-                        html += `<div class="detail-item" style="cursor:default;">
-                            <span class="item-icon">📦</span> ${name}
-                        </div>`;
-                    });
-                    html += `</div></div>`;
-                }
+  // Draw lines
+  drawLinesFromDOM();
 
-                if (!html) {
-                    html = `<div class="detail-section" style="padding:14px 18px;color:#6b7280;font-size:13px;">
-                        No controllers or providers
-                    </div>`;
-                }
+  // Enable dragging
+  makeCardsDraggable();
+}
 
-                return html;
-            }
+// ===== DRAW SVG LINES (reads actual DOM positions) =====
+function drawLinesFromDOM() {
+  const svg = document.getElementById('line-svg');
+  const area = document.getElementById('diagram-area');
+  const W = area.clientWidth;
+  const H = area.clientHeight;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.setAttribute('width', W);
+  svg.setAttribute('height', H);
 
-            // ─── Modal: Module ─────────────────────────────────────
-            function showModuleModal(modName, modMap, ctrlMap, provMap) {
-                const mod = modMap[modName];
-                if (!mod) return;
+  const rootCard = document.querySelector('.r-card.center');
+  // Clear old lines + arrowheads but keep defs
+  svg.querySelectorAll('line, polygon').forEach(l => l.remove());
+  if (!rootCard) return;
 
-                modalTitle.innerHTML = `📦 ${modName}`;
+  const rootX = parseFloat(rootCard.style.left);
+  const rootY = parseFloat(rootCard.style.top);
+  if (isNaN(rootX) || isNaN(rootY)) return;
 
-                let body = '';
+  const root = data.modules.find(m => m.name === 'AppModule');
+  if (!root) return;
+  const rootImports = new Set(root.imports || []);
 
-                // Controllers
-                if (mod.controllers && mod.controllers.length > 0) {
-                    body += `<div class="modal-section">
-                        <h3>🎛️ Controllers (${mod.controllers.length})</h3>`;
-                    mod.controllers.forEach(name => {
-                        const ctrl = ctrlMap[name];
-                        const routes = ctrl ? (ctrl.routers || []) : [];
-                        body += `<div class="modal-row" style="flex-direction:column;align-items:stretch;gap:4px;">
-                            <div style="display:flex;align-items:center;gap:8px;">
-                                <span style="color:#4ed9a6;">🎛️</span>
-                                <strong>${name}</strong>
-                                ${ctrl && ctrl.prefix ? `<span style="color:#6b7280;font-size:12px;">/ ${ctrl.prefix}</span>` : ''}
-                            </div>
-                            ${routes.length > 0 ? `
-                            <div style="padding-left:28px;display:flex;flex-direction:column;gap:3px;">
-                                ${routes.map(r => `
-                                    <div style="display:flex;align-items:center;gap:8px;font-size:12px;">
-                                        <span class="route-method ${r.method.toLowerCase()}">${r.method}</span>
-                                        <span class="route-path">/${ctrl ? ctrl.prefix : ''}${r.path ? '/' + r.path : ''}</span>
-                                        <span style="color:#6b7280;margin-left:auto;">${r.name}</span>
-                                    </div>
-                                `).join('')}
-                            </div>` : ''}
-                        </div>`;
-                    });
-                    body += `</div>`;
-                }
+  const cards = document.querySelectorAll('.r-card:not(.center)');
+  const isFocused = focusModule !== null;
 
-                // Providers
-                if (mod.providers && mod.providers.length > 0) {
-                    body += `<div class="modal-section">
-                        <h3>⚙️ Providers (${mod.providers.length})</h3>`;
-                    mod.providers.forEach(name => {
-                        const prov = provMap[name];
-                        const svcs = prov ? (prov.services || []) : [];
-                        body += `<div class="modal-row" style="flex-direction:column;align-items:stretch;gap:4px;">
-                            <div style="display:flex;align-items:center;gap:8px;">
-                                <span style="color:#b388ff;">⚙️</span>
-                                <strong>${name}</strong>
-                                <span style="color:#6b7280;font-size:12px;margin-left:auto;">${svcs.length} method${svcs.length !== 1 ? 's' : ''}</span>
-                            </div>
-                            ${svcs.length > 0 ? `
-                            <div style="padding-left:28px;display:flex;flex-wrap:wrap;gap:3px;">
-                                ${svcs.map(s => `
-                                    <span style="font-size:11px;background:rgba(179,136,255,0.1);color:#b388ff;padding:2px 8px;border-radius:10px;">${s.name}</span>
-                                `).join('')}
-                            </div>` : ''}
-                        </div>`;
-                    });
-                    body += `</div>`;
-                }
+  let linesHtml = '';
 
-                // Imports
-                if (mod.imports && mod.imports.length > 0) {
-                    body += `<div class="modal-section">
-                        <h3>📦 Imports (${mod.imports.length})</h3>
-                        <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                            ${mod.imports.map(name => `
-                                <span style="font-size:12px;background:rgba(79,195,247,0.1);color:#4fc3f7;padding:4px 10px;border-radius:6px;border:1px solid rgba(79,195,247,0.15);">${name}</span>
-                            `).join('')}
-                        </div>
-                    </div>`;
-                }
+  // Compute where a line from (x1,y1) hits the card's bounding rectangle centered at (cx,cy),
+  // then back off 'pad' pixels so the arrow sits cleanly outside the card's border.
+  function endAtEdge(x1, y1, cx, cy, hw, hh, pad) {
+    const dx = cx - x1, dy = cy - y1;
+    const len = Math.sqrt(dx * dx + dy * dy);
+    if (len < 1) return { x: cx, y: cy };
+    let tMin = 1;
+    if (dx > 0) { const t = (cx - hw - x1) / dx; const y = y1 + t * dy; if (t > 0 && t < tMin && y >= cy - hh && y <= cy + hh) tMin = t; }
+    if (dx < 0) { const t = (cx + hw - x1) / dx; const y = y1 + t * dy; if (t > 0 && t < tMin && y >= cy - hh && y <= cy + hh) tMin = t; }
+    if (dy > 0) { const t = (cy - hh - y1) / dy; const x = x1 + t * dx; if (t > 0 && t < tMin && x >= cx - hw && x <= cx + hw) tMin = t; }
+    if (dy < 0) { const t = (cy + hh - y1) / dy; const x = x1 + t * dx; if (t > 0 && t < tMin && x >= cx - hw && x <= cx + hw) tMin = t; }
+    const dt = pad / len;
+    const t = Math.max(0, tMin - dt);
+    return { x: x1 + dx * t, y: y1 + dy * t };
+  }
 
-                // Exports
-                if (mod.exports && mod.exports.length > 0) {
-                    body += `<div class="modal-section">
-                        <h3>📤 Exports (${mod.exports.length})</h3>
-                        <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                            ${mod.exports.map(name => `
-                                <span style="font-size:12px;background:rgba(255,183,77,0.1);color:#ffb74d;padding:4px 10px;border-radius:6px;border:1px solid rgba(255,183,77,0.15);">${name}</span>
-                            `).join('')}
-                        </div>
-                    </div>`;
-                }
+  // Helper: draw a line + inline arrowhead polygon at the card edge
+  function arrowLine(x1, y1, x2, y2, el, color, width, dash, arrowColor) {
+    const pad = 4;
+    const hw = el.offsetWidth / 2;
+    const hh = el.offsetHeight / 2;
+    const edge = endAtEdge(x1, y1, x2, y2, hw, hh, pad);
+    linesHtml += `<line x1="${x1}" y1="${y1}" x2="${edge.x}" y2="${edge.y}" stroke="${color}" stroke-width="${width}"${dash ? ` stroke-dasharray="${dash}"` : ''}/>`;
+    if (arrowColor) {
+      const a = Math.atan2(edge.y - y1, edge.x - x1) * (180 / Math.PI);
+      const s = 7;
+      linesHtml += `<polygon points="0,0 ${-s},${-s/2} ${-s},${s/2}" fill="${arrowColor}" transform="translate(${edge.x},${edge.y}) rotate(${a})"/>`;
+    }
+  }
 
-                if (!body) {
-                    body = `<div style="color:#6b7280;text-align:center;padding:20px;">No details available</div>`;
-                }
+  // Collect card entry info
+  const cardEntries = [];
+  cards.forEach(card => {
+    const modName = card.getAttribute('data-module');
+    if (!modName) return;
+    const x = parseFloat(card.style.left);
+    const y = parseFloat(card.style.top);
+    if (isNaN(x) || isNaN(y)) return;
+    cardEntries.push({ name: modName, x, y, el: card });
+  });
 
-                modalBody.innerHTML = body;
-                modal.classList.add('active');
-            }
+  // Spokes: solid arrow from AppModule → module it imports (hidden when focusing on another module)
+  cardEntries.forEach(({ name, x, y, el }) => {
+    if (!rootImports.has(name)) return;
+    if (isFocused && focusModule !== root.name) return;
+    const inFocus = isFocused && (name === focusModule || hasRelationship(name, focusModule));
+    const strokeColor = isFocused
+      ? (inFocus ? '#dc2626' : 'rgba(148,163,184,0.18)')
+      : 'rgba(100,116,139,0.5)';
+    const strokeW = isFocused ? (inFocus ? 2 : 0.5) : 1.2;
+    const arrowColor = isFocused ? (inFocus ? '#dc2626' : null) : '#64748b';
+    arrowLine(rootX, rootY, x, y, el, strokeColor, strokeW, null, arrowColor);
+  });
 
-            // ─── Modal: Controller ─────────────────────────────────
-            function showControllerModal(name, ctrlMap) {
-                const ctrl = ctrlMap[name];
-                if (!ctrl) return;
+  // Inter-module arcs: dashed directional arrows
+  for (let i = 0; i < cardEntries.length; i++) {
+    for (let j = 0; j < cardEntries.length; j++) {
+      if (i === j) continue;
+      const from = cardEntries[i];
+      const to = cardEntries[j];
+      const imports = moduleImportMap[from.name] || [];
+      if (!imports.includes(to.name)) continue;
+      const inFocus = isFocused && (from.name === focusModule || to.name === focusModule);
+      const strokeColor = isFocused
+        ? (inFocus ? '#dc2626' : 'rgba(148,163,184,0.12)')
+        : 'rgba(100,116,139,0.35)';
+      const strokeW = isFocused ? (inFocus ? 2 : 0.5) : 1;
+      const arrowColor = isFocused ? (inFocus ? '#dc2626' : null) : '#64748b';
+      arrowLine(from.x, from.y, to.x, to.y, to.el, strokeColor, strokeW, '5,5', arrowColor);
+    }
+  }
 
-                modalTitle.innerHTML = `🎛️ ${name}`;
+  if (linesHtml) svg.insertAdjacentHTML('beforeend', linesHtml);
 
-                let body = '';
-                body += `<div class="modal-section">
-                    <h3>Endpoint Prefix</h3>
-                    <div class="modal-row">
-                        <span class="label">Prefix</span>
-                        <span class="value mono">/${ctrl.prefix}</span>
-                    </div>
-                </div>`;
+  // Apply dim + red borders to cards
+  document.querySelectorAll('.r-card').forEach(el => {
+    const name = el.getAttribute('data-module');
+    el.classList.remove('dim', 'focused', 'related');
+    if (!isFocused || !name) return;
+    if (name === focusModule) {
+      el.classList.add('focused');
+    } else if (el.classList.contains('center')) {
+      el.classList.add('dim');
+    } else if (hasRelationship(name, focusModule)) {
+      el.classList.add('related');
+    } else {
+      el.classList.add('dim');
+    }
+  });
+}
 
-                if (ctrl.dependencies && ctrl.dependencies.length > 0) {
-                    body += `<div class="modal-section">
-                        <h3>Dependencies</h3>
-                        <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                            ${ctrl.dependencies.map(d => `
-                                <span style="font-size:12px;background:rgba(179,136,255,0.1);color:#b388ff;padding:4px 10px;border-radius:6px;border:1px solid rgba(179,136,255,0.15);">${d}</span>
-                            `).join('')}
-                        </div>
-                    </div>`;
-                }
+// ===== CONTEXT MENU (right-click) =====
+function showContextMenu(event, modName) {
+  event.preventDefault();
+  contextMenuTarget = modName;
+  const menu = document.getElementById('context-menu');
+  menu.style.display = 'block';
+  // Position clamped to viewport
+  let x = event.clientX, y = event.clientY;
+  const mw = menu.offsetWidth || 200;
+  const mh = menu.offsetHeight || 80;
+  if (x + mw > window.innerWidth) x = window.innerWidth - mw - 8;
+  if (y + mh > window.innerHeight) y = window.innerHeight - mh - 8;
+  if (x < 8) x = 8;
+  if (y < 8) y = 8;
+  menu.style.left = x + 'px';
+  menu.style.top = y + 'px';
+}
 
-                if (ctrl.routers && ctrl.routers.length > 0) {
-                    body += `<div class="modal-section">
-                        <h3>Routes (${ctrl.routers.length})</h3>`;
-                    ctrl.routers.forEach(r => {
-                        body += `<div class="modal-row">
-                            <span class="route-method ${r.method.toLowerCase()}">${r.method}</span>
-                            <span class="value mono">/${ctrl.prefix}${r.path ? '/' + r.path : ''}</span>
-                            <span style="color:#6b7280;margin-left:auto;font-size:12px;">${r.name}</span>
-                        </div>`;
-                    });
-                    body += `</div>`;
-                }
+function showRelationships() {
+  const modName = contextMenuTarget;
+  if (!modName) return;
+  focusModule = modName;
+  document.getElementById('focus-hint').classList.add('show');
+  hideContextMenu();
+  drawLinesFromDOM();
+}
 
-                modalBody.innerHTML = body;
-                modal.classList.add('active');
-            }
+function hideRelationships() {
+  focusModule = null;
+  document.getElementById('focus-hint').classList.remove('show');
+  hideContextMenu();
+  drawLinesFromDOM();
+}
 
-            // ─── Modal: Provider ───────────────────────────────────
-            function showProviderModal(name, provMap) {
-                const prov = provMap[name];
-                if (!prov) return;
+function hideContextMenu() {
+  document.getElementById('context-menu').style.display = 'none';
+  contextMenuTarget = null;
+}
 
-                modalTitle.innerHTML = `⚙️ ${name}`;
+// ===== DRAGGING =====
+function makeCardsDraggable() {
+  document.querySelectorAll('.r-card').forEach(card => {
+    card.addEventListener('mousedown', function(e) {
+      if (e.button !== 0) return;
+      if (e.target.closest('.r-card') !== this) return;
 
-                let body = '';
+      dragOccurred = false;
+      dragging = {
+        el: this,
+        startX: e.clientX,
+        startY: e.clientY,
+        origLeft: parseFloat(this.style.left) || 0,
+        origTop: parseFloat(this.style.top) || 0
+      };
+      this.classList.add('dragging');
+      e.preventDefault();
+    });
+  });
+}
 
-                if (prov.dependencies && prov.dependencies.length > 0) {
-                    body += `<div class="modal-section">
-                        <h3>Dependencies (${prov.dependencies.length})</h3>
-                        <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                            ${prov.dependencies.map(d => `
-                                <span style="font-size:12px;background:rgba(179,136,255,0.1);color:#b388ff;padding:4px 10px;border-radius:6px;border:1px solid rgba(179,136,255,0.15);">${d}</span>
-                            `).join('')}
-                        </div>
-                    </div>`;
-                }
+document.addEventListener('mousemove', function(e) {
+  if (!dragging) return;
+  const dx = e.clientX - dragging.startX;
+  const dy = e.clientY - dragging.startY;
+  if (Math.abs(dx) > 5 || Math.abs(dy) > 5) dragOccurred = true;
+  dragging.el.style.left = (dragging.origLeft + dx) + 'px';
+  dragging.el.style.top = (dragging.origTop + dy) + 'px';
+  drawLinesFromDOM();
+});
 
-                if (prov.services && prov.services.length > 0) {
-                    body += `<div class="modal-section">
-                        <h3>Methods (${prov.services.length})</h3>
-                        <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                            ${prov.services.map(s => `
-                                <span style="font-size:12px;background:rgba(78,217,166,0.1);color:#4ed9a6;padding:4px 12px;border-radius:6px;border:1px solid rgba(78,217,166,0.15);">${s.name}</span>
-                            `).join('')}
-                        </div>
-                    </div>`;
-                }
+document.addEventListener('mouseup', function() {
+  if (dragging) {
+    dragging.el.classList.remove('dragging');
+    dragging = null;
+  }
+});
 
-                if (!body) {
-                    body = `<div style="color:#6b7280;text-align:center;padding:20px;">No details available</div>`;
-                }
+// ===== PANNING (scroll wheel + middle-click) =====
+let panX = 0, panY = 0;
+let isPanning = false, panStartX, panStartY, panStartPX, panStartPY;
 
-                modalBody.innerHTML = body;
-                modal.classList.add('active');
-            }
+const diagramArea = document.getElementById('diagram-area');
 
-        })();
-    </script>
+diagramArea.addEventListener('wheel', function(e) {
+  if (e.ctrlKey || e.metaKey) return;
+  panX -= e.deltaX;
+  panY -= e.deltaY;
+  updatePan();
+  e.preventDefault();
+}, { passive: false });
 
+diagramArea.addEventListener('mousedown', function(e) {
+  if (e.button === 1) {
+    isPanning = true;
+    panStartX = e.clientX;
+    panStartY = e.clientY;
+    panStartPX = panX;
+    panStartPY = panY;
+    e.preventDefault();
+  }
+});
+
+document.addEventListener('mousemove', function(e) {
+  if (isPanning) {
+    panX = panStartPX + (e.clientX - panStartX);
+    panY = panStartPY + (e.clientY - panStartY);
+    updatePan();
+  }
+});
+
+document.addEventListener('mouseup', function(e) {
+  if (e.button === 1) isPanning = false;
+});
+
+function updatePan() {
+  document.getElementById('pan-layer').style.transform = `translate(${panX}px, ${panY}px)`;
+}
+
+// Reset focus on background click
+document.getElementById('diagram-area').addEventListener('click', function(e) {
+  if (e.target.closest('.r-card')) return;
+  if (focusModule) {
+    focusModule = null;
+    document.getElementById('focus-hint').classList.remove('show');
+    drawLinesFromDOM();
+  }
+});
+
+// Close context menu on outside click
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#context-menu')) {
+    hideContextMenu();
+  }
+});
+
+// ===== SEARCH =====
+document.getElementById('search-input').addEventListener('input', function() {
+  renderRadial(this.value);
+});
+
+// ===== MODAL =====
+function openDependencyModal(name) {
+  // Navigate to provider sheet if it's a provider, otherwise module modal
+  if (data.providers.find(p => p.name === name)) {
+    openProviderSheet(name);
+  } else {
+    openModuleModal(name);
+  }
+}
+
+function openModuleModal(modName) {
+  if (dragOccurred) { dragOccurred = false; return; }
+  const mod = data.modules.find(m => m.name === modName);
+  if (!mod) return;
+  document.getElementById('mm-title').textContent = modName;
+  document.getElementById('mm-icon').textContent = modName.charAt(0);
+
+  const impEl = document.getElementById('mm-imports');
+  impEl.innerHTML = mod.imports.length
+    ? mod.imports.map(i => `<div onclick="openDependencyModal('${i}')" class="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-white border border-slate-200 text-sm font-semibold text-slate-700 cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all"><svg width="14" height="14" fill="none" stroke="#6366f1" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3"/></svg>${i}</div>`).join('')
+    : '<p class="text-sm text-slate-400 italic px-1">No imports — root module.</p>';
+
+  const ctrlEl = document.getElementById('mm-controllers');
+  if (mod.controllers.length) {
+    ctrlEl.innerHTML = mod.controllers.map(cName => {
+      const c = data.controllers.find(ct => ct.name === cName);
+      if (!c) return '';
+      const methods = [...new Set(c.routers.map(r => r.method))];
+      return `<div class="sub-card ctrl" onclick="event.stopPropagation();openControllerSheet('${cName}')"><div class="flex items-center justify-between mb-1.5"><span class="text-sm font-bold text-slate-800">${c.name}</span><span class="text-xs font-mono font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">${c.prefix}</span></div><div class="flex flex-wrap gap-1">${methods.map(m => `<span class="r-b ${m}">${m}</span>`).join('')}<span class="text-xs text-slate-400 ml-1">(${c.routers.length} route${c.routers.length > 1 ? 's' : ''})</span></div></div>`;
+    }).join('');
+  } else {
+    ctrlEl.innerHTML = '<p class="text-sm text-slate-400 italic px-1">No controllers in this module.</p>';
+  }
+
+  const provEl = document.getElementById('mm-providers');
+  if (mod.providers.length) {
+    provEl.innerHTML = mod.providers.map(pName => {
+      const p = data.providers.find(pr => pr.name === pName);
+      if (!p) return '';
+      return `<div class="sub-card prov" onclick="event.stopPropagation();openProviderSheet('${pName}')"><div class="flex items-center justify-between"><span class="text-sm font-bold text-slate-800">${p.name}</span><span class="text-xs text-slate-400">${p.dependencies.length} dep${p.dependencies.length !== 1 ? 's' : ''} · ${p.services.length} method${p.services.length !== 1 ? 's' : ''}</span></div></div>`;
+    }).join('');
+  } else {
+    provEl.innerHTML = '<p class="text-sm text-slate-400 italic px-1">No providers in this module.</p>';
+  }
+
+  const expEl = document.getElementById('mm-exports');
+  expEl.innerHTML = mod.exports.length
+    ? mod.exports.map(e => `<div onclick="openDependencyModal('${e}')" class="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-white border border-slate-200 text-sm font-semibold text-slate-700 cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all"><svg width="14" height="14" fill="none" stroke="#0ea5e9" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>${e}</div>`).join('')
+    : '<p class="text-sm text-slate-400 italic px-1">Nothing exported from this module.</p>';
+
+  document.getElementById('modal-view-module').classList.remove('hidden');
+  document.getElementById('modal-view-component').classList.add('hidden');
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function openControllerSheet(cName) {
+  const c = data.controllers.find(ct => ct.name === cName);
+  if (!c) return;
+  document.getElementById('mc-title').textContent = c.name;
+  document.getElementById('mc-icon').className = 'w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-lg bg-emerald-600';
+  document.getElementById('mc-icon').textContent = c.name.charAt(0);
+  document.getElementById('mc-sub').innerHTML = `Controller · <code class="text-xs font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-500">${c.prefix}</code>`;
+  document.getElementById('mc-body').innerHTML = `
+    <div class="mb-6"><h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">API Routes (${c.routers.length})</h3><div class="space-y-2">${c.routers.map(r => `<div class="spec-entry flex items-center gap-4"><span class="r-b ${r.method} flex-shrink-0 min-w-[52px] text-center">${r.method}</span><span class="font-mono text-sm font-medium text-slate-800 flex-1">${c.prefix}${r.path}</span><span class="text-xs text-slate-400">${r.name}</span></div>`).join('')}</div></div>
+    <div><h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Dependencies</h3><div class="flex flex-wrap gap-2">${c.dependencies.length ? c.dependencies.map(d => `<span onclick="openDependencyModal('${d}')" class="cursor-pointer px-3 py-1.5 rounded-lg text-sm font-medium bg-violet-50 text-violet-700 border border-violet-200 hover:border-violet-400 hover:bg-violet-100 transition-all">${d}</span>`).join('') : '<span class="text-sm text-slate-400 italic">None</span>'}</div></div>`;
+  document.getElementById('modal-view-module').classList.add('hidden');
+  document.getElementById('modal-view-component').classList.remove('hidden');
+}
+
+function openProviderSheet(pName) {
+  const p = data.providers.find(pr => pr.name === pName);
+  if (!p) return;
+  document.getElementById('mc-title').textContent = p.name;
+  document.getElementById('mc-icon').className = 'w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-lg bg-violet-600';
+  document.getElementById('mc-icon').textContent = p.name.charAt(0);
+  document.getElementById('mc-sub').textContent = 'Provider / Injectable Service';
+  document.getElementById('mc-body').innerHTML = `
+    <div class="mb-6"><h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Injected Dependencies</h3><div class="flex flex-wrap gap-2">${p.dependencies.length ? p.dependencies.map(d => `<span onclick="openDependencyModal('${d}')" class="cursor-pointer px-3 py-1.5 rounded-lg text-sm font-medium bg-violet-50 text-violet-700 border border-violet-200 hover:border-violet-400 hover:bg-violet-100 transition-all">${d}</span>`).join('') : '<span class="text-sm text-slate-400 italic">None (standalone)</span>'}</div></div>
+    <div><h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Public Methods (${p.services.length})</h3><div class="grid grid-cols-2 sm:grid-cols-3 gap-2">${p.services.map(s => `<div class="spec-entry text-sm font-mono text-slate-700 text-center">${s.name}()</div>`).join('')}</div></div>`;
+  document.getElementById('modal-view-module').classList.add('hidden');
+  document.getElementById('modal-view-component').classList.remove('hidden');
+}
+
+function popComponentView() {
+  document.getElementById('modal-view-module').classList.remove('hidden');
+  document.getElementById('modal-view-component').classList.add('hidden');
+}
+
+// ===== ONBOARDING NOTICE =====
+function dismissNotice() {
+  document.getElementById('onboard-notice').style.display = 'none';
+}
+
+function showNotice() {
+  document.getElementById('onboard-notice').style.display = 'block';
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    if (contextMenuTarget) { hideContextMenu(); return; }
+    if (focusModule) {
+      focusModule = null;
+      document.getElementById('focus-hint').classList.remove('show');
+      drawLinesFromDOM();
+      return;
+    }
+    if (!document.getElementById('modal-view-component').classList.contains('hidden')) popComponentView();
+    else closeModal();
+  }
+});
+
+// ===== RESIZE =====
+window.addEventListener('resize', function() {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => renderRadial(document.getElementById('search-input').value), 150);
+});
+
+function rebuildModuleMap() {
+  moduleImportMap = {};
+  data.modules.forEach(m => { moduleImportMap[m.name] = m.imports || []; });
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', function() {
+  rebuildModuleMap();
+  fetch('/api/data')
+    .then(r => { if (!r.ok) throw Error(); return r.json(); })
+    .then(d => { data = d; rebuildModuleMap(); })
+    .catch(() => { console.log('Using sample data'); })
+    .finally(() => {
+      renderRadial();
+      updateStats();
+      document.getElementById('loading').classList.add('hidden');
+      showNotice();
+    });
+});
+</script>
 </body>
 </html>

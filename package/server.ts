@@ -1,7 +1,6 @@
 import express from "express";
 import open from "open";
 import path from "path";
-import fs from "fs";
 import { fileURLToPath } from "url";
 import { runASTAnalysis } from "./parser.js";
 

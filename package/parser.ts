@@ -1,4 +1,5 @@
 import * as ts from "typescript";
+import path from "path";
 import fs from "fs";
 
 import {
@@ -226,8 +227,22 @@ function parserProvider(node: ts.ClassDeclaration) {
 }
 
 export function runASTAnalysis(): NestProjectStructure | null {
+  const currentProjectRoot = process.cwd();
+  let targetFile = path.join(currentProjectRoot, "src", "app.module.ts");
+
+if (!fs.existsSync(targetFile)) {
+    console.log("⚠️ Running in Local Dev Mode: Using fallback project path...");
+   
+    targetFile = "C:\\Users\\Yahya Meksen\\Documents\\github-project\\ToDo-Manager-Project\\src\\app.module.ts";
+  }
+
+if(!fs.existsSync(targetFile)){
+    console.error(`\n❌ Error: Could not find 'src/app.module.ts' in this directory.`);
+    console.error(`💡 Please make sure you are running this tool from the root folder of a NestJS project.\n`);
+    process.exit(1);
+  }
   const filePath: string[] = [
-    "C:\\Users\\Yahya Meksen\\Documents\\github-project\\ToDo-Manager-Project\\src\\app.module.ts",
+    targetFile
   ];
   const config: ts.CompilerOptions = {
     experimentalDecorators: true,
@@ -292,5 +307,3 @@ export function runASTAnalysis(): NestProjectStructure | null {
 
   return structure;
 }
- 
-
