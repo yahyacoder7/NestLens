@@ -6,6 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "files": [
+     "package/"
+  ],
   "keywords": [
     "nestjs",
     "typescript",
@@ -16,15 +19,16 @@
   "author": "",
   "license": "MIT",
   "type": "module",
+
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^25.9.1",
     "ts-node": "^10.9.2",
-    "tsx": "^4.22.3",
     "typescript": "^6.0.3"
   },
   "dependencies": {
     "express": "^5.2.1",
+    "tsx": "^4.22.3",
     "open": "^11.0.0"
   },
   "bin": {
