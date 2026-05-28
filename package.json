@@ -2,14 +2,19 @@
   "name": "nestlens",
   "version": "1.0.0",
   "description": "Static architecture visualisation tool for NestJS projects — automatically parses NestJS source code using the TypeScript Compiler API and renders an interactive architecture dashboard.",
-  "main": "index.js",
+  "main": "./package/server.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "nestlens": "tsx ./package/server.ts"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "nestjs",
+    "typescript",
+    "cli",
+    "visualizer",
+    "architecture"
+  ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "type": "module",
   "devDependencies": {
     "@types/express": "^5.0.6",
@@ -21,5 +26,8 @@
   "dependencies": {
     "express": "^5.2.1",
     "open": "^11.0.0"
+  },
+  "bin": {
+    "nestlens": "./package/server.ts"
   }
 }

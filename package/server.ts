@@ -1,3 +1,4 @@
+#!/usr/bin/env tsx
 import express from "express";
 import open from "open";
 import path from "path";
