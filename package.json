@@ -1,6 +1,6 @@
 {
   "name": "nestlens-viewer",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Static architecture visualisation tool for NestJS projects — automatically parses NestJS source code using the TypeScript Compiler API and renders an interactive architecture dashboard.",
   "main": "./dist/package/server.js",
   "scripts": {
