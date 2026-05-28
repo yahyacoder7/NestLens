@@ -230,11 +230,7 @@ export function runASTAnalysis(): NestProjectStructure | null {
   const currentProjectRoot = process.cwd();
   let targetFile = path.join(currentProjectRoot, "src", "app.module.ts");
 
-if (!fs.existsSync(targetFile)) {
-    console.log("⚠️ Running in Local Dev Mode: Using fallback project path...");
-   
-    targetFile = "C:\\Users\\Yahya Meksen\\Documents\\github-project\\ToDo-Manager-Project\\src\\app.module.ts";
-  }
+
 
 if(!fs.existsSync(targetFile)){
     console.error(`\n❌ Error: Could not find 'src/app.module.ts' in this directory.`);
