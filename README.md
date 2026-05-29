@@ -122,7 +122,7 @@ npm install nestlens-viewer
 Navigate to your NestJS project root and run:
 
 ```bash
-npx nest-viewer
+npx nestlens-viewer
 ```
 
 NestLens will scan your `src/app.module.ts` and all files it imports, then open the dashboard automatically at `http://localhost:4000`.
